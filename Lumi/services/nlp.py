@@ -264,17 +264,17 @@ def extract_place_name(text, fuzzy_cutoff=0.85):
     # 1. Coincidencia exacta (normalizada)
     exact_matches = []
     for place in places:
-        place_name_normalized = normalize_text(place["name"])
+        place_name_normalized = normalize_text(place["nombre"])
         if _keyword_pattern(place_name_normalized).search(normalized):
             exact_matches.append(place)
 
     if exact_matches:
         # Si hay varias coincidencias, devolver el nombre más largo/específico
-        best = max(exact_matches, key=lambda p: len(p["name"]))
-        return best["name"]
+        best = max(exact_matches, key=lambda p: len(p["nombre"]))
+        return best["nombre"]
 
     # 2. Coincidencia aproximada (tolerante a errores de tipeo)
-    place_names = {normalize_text(p["name"]): p["name"] for p in places}
+    place_names = {normalize_text(p["nombre"]): p["nombre"] for p in places}
     words = normalized.split()
 
     # Compara tanto palabras individuales como el texto completo

@@ -154,7 +154,7 @@ CATEGORÍA: {category}
 
                 place = last_place
 
-                context["lugar_memoria"] = last_place["name"]
+                context["lugar_memoria"] = last_place["nombre"]
 
 
         # ==========================================
