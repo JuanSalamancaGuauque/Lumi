@@ -5,41 +5,251 @@
 
     <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Lumi</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <!-- IMPORTANTE:
+         Flask sirve el CSS mediante /css/
+    -->
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
 
 </head>
 
+
 <body>
 
-    <div class="container">
+    <main class="lumi-app">
 
-        <h1>😊 Lumi</h1>
 
-        <p>Soy tu asistente turístico.</p>
+        <!-- =================================================
+             PARTE SUPERIOR
+        ================================================== -->
 
-        <input
-            id="message"
-            type="text"
-            placeholder="Pregúntame algo..."
+        <section class="lumi-header">
+
+
+            <!-- Fondo -->
+
+            <div class="background-shape shape-one"></div>
+
+            <div class="background-shape shape-two"></div>
+
+
+            <!-- Árboles -->
+
+            <div class="tree tree-one"></div>
+
+            <div class="tree tree-two"></div>
+
+            <div class="tree tree-three"></div>
+
+            <div class="tree tree-four"></div>
+
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
+
+            <div class="lumi-logo">
+
+                <span class="logo-dot"></span>
+
+                <span class="logo-text">
+                    LUMI
+                </span>
+
+                <span class="logo-dot"></span>
+
+            </div>
+
+
+            <!-- =================================================
+                 ESPACIO PARA EL GIF DE LUMI
+            ================================================== -->
+
+            <div
+                id="lumi-avatar"
+                class="lumi-avatar"
+            >
+
+                <!--
+
+                    AQUÍ NO PONEMOS NADA TODAVÍA.
+
+                    Este espacio está reservado para
+                    tu GIF de Lumi.
+
+                -->
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =================================================
+             CHAT
+        ================================================== -->
+
+        <section class="chat-container">
+
+
+            <!-- MENSAJE INICIAL -->
+
+            <div
+                id="welcome-message"
+                class="lumi-response welcome-message"
+            >
+
+                ¡Hola! Soy Lumi.
+                <br>
+                Pregúntame algo sobre Bogotá.
+
+            </div>
+
+
+            <!-- RESPUESTAS -->
+
+            <div
+                id="response"
+                class="response-container"
+            >
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =================================================
+             BARRA DE TEXTO
+        ================================================== -->
+
+        <div class="input-area">
+
+
+            <div class="input-wrapper">
+
+
+                <!-- MICRÓFONO -->
+
+                <button
+                    id="mic"
+                    class="mic-button"
+                    type="button"
+                    aria-label="Hablar con Lumi"
+                >
+
+                    🎙
+
+                </button>
+
+
+                <!-- TEXTO -->
+
+                <input
+                    id="message"
+                    type="text"
+                    placeholder="Soy Lumi! Pregúntame algo..."
+                    autocomplete="off"
+                >
+
+
+            </div>
+
+
+            <!-- ENVIAR -->
+
+            <button
+                id="send"
+                class="send-button"
+                type="button"
+                aria-label="Enviar mensaje"
+            >
+
+                ➤
+
+            </button>
+
+
+        </div>
+
+
+    </main>
+
+
+    <!-- =================================================
+         MODAL DE IMAGEN
+    ================================================== -->
+
+    <div
+        id="imageModal"
+        class="image-modal"
+    >
+
+        <button
+            id="closeModal"
+            class="close-modal"
+            type="button"
         >
 
-        <button id="send">
-            Enviar
+            ×
+
         </button>
 
-        <button id="mic">
-            🎤
-        </button>
 
-        <div id="response"></div>
+        <div class="modal-content">
+
+            <img
+                id="modalImage"
+                src=""
+                alt="Lugar"
+            >
+
+
+            <div class="modal-info">
+
+                <h2 id="modalTitle"></h2>
+
+                <p id="modalDescription"></p>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <script src="/js/api.js" defer></script>
-    <script src="/js/app.js" defer></script>
-    <script src="/js/speech.js" defer></script>
+
+    <!-- =================================================
+         JAVASCRIPT
+         
+         IMPORTANTE:
+         Flask los sirve mediante /js/
+    ================================================== -->
+
+    <script
+        src="/js/api.js"
+        defer
+    ></script>
+
+    <script
+        src="/js/app.js"
+        defer
+    ></script>
+
+    <script
+        src="/js/speech.js"
+        defer
+    ></script>
+
 
 </body>
 

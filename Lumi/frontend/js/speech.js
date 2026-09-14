@@ -1,57 +1,120 @@
-// ======================================
-// speech.js
-// ======================================
+// =====================================================
+// LUMI
+// RECONOCIMIENTO DE VOZ
+// =====================================================
 
-const micButton = document.getElementById("mic");
+const micButton =
+    document.getElementById("mic");
 
-let recognition;
 
-// Crear reconocimiento
+let recognition = null;
+
+
+// =====================================================
+// COMPROBAR SOPORTE
+// =====================================================
+
 if ("webkitSpeechRecognition" in window) {
 
-    recognition = new webkitSpeechRecognition();
-
-} else if ("SpeechRecognition" in window) {
-
-    recognition = new SpeechRecognition();
-
-} else {
-
-    alert("Tu navegador no soporta reconocimiento de voz.");
+    recognition =
+        new webkitSpeechRecognition();
 
 }
+else if ("SpeechRecognition" in window) {
+
+    recognition =
+        new SpeechRecognition();
+
+}
+
+
+// =====================================================
+// CONFIGURACIÓN
+// =====================================================
 
 if (recognition) {
 
     recognition.lang = "es-CO";
+
     recognition.interimResults = false;
+
     recognition.continuous = false;
+
     recognition.maxAlternatives = 1;
+
+
+    // =================================================
+    // EMPEZÓ A ESCUCHAR
+    // =================================================
 
     recognition.onstart = () => {
 
-        micButton.innerHTML = "🔴";
+        micButton.textContent = "🔴";
+
+        micButton.classList.add(
+            "recording"
+        );
+
+        input.placeholder =
+            "Escuchando...";
 
     };
+
+
+    // =================================================
+    // DEJÓ DE ESCUCHAR
+    // =================================================
 
     recognition.onend = () => {
 
-        micButton.innerHTML = "🎤";
+        micButton.textContent = "🎙";
+
+        micButton.classList.remove(
+            "recording"
+        );
+
+        input.placeholder =
+            "Soy Lumi! Pregúntame algo...";
 
     };
+
+
+    // =================================================
+    // ERROR
+    // =================================================
 
     recognition.onerror = (event) => {
 
-        console.error(event);
+        console.error(
+            "Error de reconocimiento:",
+            event
+        );
+
+        micButton.textContent = "🎙";
+
+        micButton.classList.remove(
+            "recording"
+        );
+
+        input.placeholder =
+            "Soy Lumi! Pregúntame algo...";
 
     };
 
+
+    // =================================================
+    // RESULTADO
+    // =================================================
+
     recognition.onresult = (event) => {
 
-        const text = event.results[0][0].transcript;
+        const text =
+            event.results[0][0]
+                .transcript;
 
-        // usamos la variable input creada en app.js
+
         input.value = text;
+
 
         askLumi(text);
 
@@ -59,31 +122,76 @@ if (recognition) {
 
 }
 
-micButton.addEventListener("click", () => {
 
-    if (recognition) {
+// =====================================================
+// BOTÓN MICRÓFONO
+// =====================================================
 
-        recognition.start();
+micButton.addEventListener(
+    "click",
+    () => {
+
+        if (!recognition) {
+
+            alert(
+                "Tu navegador no soporta reconocimiento de voz."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            recognition.start();
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
 
     }
+);
 
-});
 
-// ------------------------------
-// Voz de Lumi
-// ------------------------------
+// =====================================================
+// VOZ DE LUMI
+// =====================================================
 
 function speak(text) {
 
+    if (
+        !("speechSynthesis" in window)
+    ) {
+
+        return;
+
+    }
+
+
     speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
 
     utterance.lang = "es-CO";
+
     utterance.rate = 1;
+
     utterance.pitch = 1;
+
     utterance.volume = 1;
 
-    speechSynthesis.speak(utterance);
+
+    speechSynthesis.speak(
+        utterance
+    );
 
 }
