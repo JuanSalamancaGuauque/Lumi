@@ -93,6 +93,14 @@ INSTRUCCIONES IMPORTANTES:
 13. No uses tablas ni formatos complicados.
 14. Responde como si fueras Lumi hablando directamente
     con el usuario.
+15. El contexto incluye "historial_reciente": una lista
+    con los últimos intercambios de esta misma conversación
+    (campos "usuario" y "lumi"). Úsalo para entender
+    referencias implícitas a algo que ya se habló antes
+    (ej. "¿y a qué hora abre?", "¿me lo recomiendas en la
+    tarde?", "¿y eso qué tan lejos queda?"), aunque el
+    usuario no repita el nombre del lugar o la categoría.
+    Si el historial está vacío, ignóralo.
 """
 
     try:

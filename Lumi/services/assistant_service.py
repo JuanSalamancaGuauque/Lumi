@@ -74,6 +74,11 @@ CATEGORÍA: {category}
 
         context["lugar_mencionado"] = place_name
 
+        # 🆕 Historial reciente de la conversación (últimos turnos).
+        # Va ANTES de las ramas de saludo/agradecimiento/despedida
+        # para que también ellas tengan acceso a él si hace falta.
+        context["historial_reciente"] = memory.get_history()
+
 
         # ==========================================
         # 3. Conversación básica
