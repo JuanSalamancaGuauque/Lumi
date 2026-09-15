@@ -12,18 +12,11 @@ from services.nlp import (
     extract_place_name
 )
 
-from services.memory import ConversationMemory
+from services.memory import get_memory
 
 from repositories.place_repository import PlaceRepository
 
 from services.gemini_service import ask_gemini
-
-
-# ==========================================
-# Memoria
-# ==========================================
-
-memory = ConversationMemory()
 
 
 # ==========================================
@@ -35,7 +28,18 @@ repository = PlaceRepository()
 
 class AssistantService:
 
-    def process_message(self, message):
+    def process_message(self, message, session_id):
+
+        # ==========================================
+        # 0. Memoria de ESTA sesión
+        # ==========================================
+
+        memory = get_memory(session_id)
+
+        # 🔎 Debug temporal: confirma que cada navegador tiene
+        # su propia memoria y que el historial va creciendo.
+        # Puedes borrar esta línea cuando ya confíes en el flujo.
+        print(f"🔑 SESSION_ID: {session_id} | Turnos en historial: {len(memory.get_history())}")
 
         # ==========================================
         # 1. Analizar mensaje
@@ -88,6 +92,8 @@ CATEGORÍA: {category}
                 )
             )
 
+            memory.add_turn(message, respuesta)
+
             return {
                 "intent": intent,
                 "speech": respuesta
@@ -107,6 +113,8 @@ CATEGORÍA: {category}
                 )
             )
 
+            memory.add_turn(message, respuesta)
+
             return {
                 "intent": intent,
                 "speech": respuesta
@@ -125,6 +133,8 @@ CATEGORÍA: {category}
                     indent=2
                 )
             )
+
+            memory.add_turn(message, respuesta)
 
             return {
                 "intent": intent,
@@ -244,6 +254,8 @@ CATEGORÍA: {category}
             message,
             context_text
         )
+
+        memory.add_turn(message, respuesta)
 
 
         # ==========================================
