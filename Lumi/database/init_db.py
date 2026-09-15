@@ -7,6 +7,12 @@ para la relacion muchos-a-muchos) e imagen. Tambien agrega el
 catalogo estado_avatar para la mascota (pendiente de nombres finales
 del equipo de animacion).
 
+FASE 3 (zona piloto): se agrega la zona "Chapinero" con 7 lugares
+reales (verificados via busqueda web y Google Places), 5 categorias
+nuevas (iglesia, libreria, gastronomia, restaurante, sendero) y sus
+relaciones. Ninguno de estos 7 lugares tiene fotos todavia, por eso
+no aparecen en la lista de "imagenes" (se agregan despues).
+
 Es seguro ejecutarlo varias veces: usa UPSERT por nombre, asi no
 duplica datos ni recicla IDs innecesariamente.
 
@@ -50,12 +56,25 @@ ZONAS = [
         "descripcion": "Localidad del noroccidente de Bogota.",
         "ciudad": "Bogota",
     },
+    {
+        "nombre": "Chapinero",
+        "descripcion": (
+            "Zona piloto del proyecto Lumi: mezcla de gastronomia, "
+            "cultura, comercio y naturaleza al oriente de Bogota."
+        ),
+        "ciudad": "Bogota",
+    },
 ]
 
 CATEGORIAS = [
     {"nombre": "mirador", "descripcion": "Puntos con vistas panoramicas de la ciudad."},
     {"nombre": "museo", "descripcion": "Espacios culturales y de exhibicion."},
     {"nombre": "parque", "descripcion": "Espacios verdes y naturales."},
+    {"nombre": "iglesia", "descripcion": "Templos y sitios de arquitectura religiosa."},
+    {"nombre": "libreria", "descripcion": "Librerias y espacios de lectura."},
+    {"nombre": "gastronomia", "descripcion": "Distritos y experiencias gastronomicas."},
+    {"nombre": "restaurante", "descripcion": "Restaurantes recomendados."},
+    {"nombre": "sendero", "descripcion": "Senderos ecologicos y rutas de caminata."},
 ]
 
 # Cada lugar referencia su zona y categorias por NOMBRE (no por id), para
@@ -118,6 +137,125 @@ LUGARES = [
                 "es_principal": 1,
             }
         ],
+    },
+
+    # -----------------------------------------------------------------
+    # FASE 3 - Zona piloto Chapinero (7 lugares, datos verificados)
+    # Ninguno tiene foto real todavia: no se incluye "imagenes".
+    # -----------------------------------------------------------------
+
+    {
+        "nombre": "Basilica Menor Nuestra Senora de Lourdes",
+        "zona": "Chapinero",
+        "categorias": ["iglesia"],
+        "descripcion": (
+            "Templo de estilo neogotico construido en 1875, el segundo "
+            "mas alto de Bogota con mas de 60 metros. Fue elevado a "
+            "basilica menor y se destaca por sus vitrales y su fachada "
+            "en piedra, considerada el simbolo arquitectonico de Chapinero."
+        ),
+        "horario_texto": (
+            "Lunes a Viernes 7:00 AM - 6:30 PM, "
+            "Sabado 7:30 AM - 6:30 PM, "
+            "Domingo 6:30 AM - 7:00 PM"
+        ),
+        "latitud": 4.6495531,
+        "longitud": -74.0623099,
+    },
+    {
+        "nombre": "Libreria Wilborada 1047",
+        "zona": "Chapinero",
+        "categorias": ["libreria"],
+        "descripcion": (
+            "Libreria y cafe dentro de una casa patrimonial de 1943, de "
+            "estilo ingles, en el barrio Quinta Camacho. Tiene patios "
+            "internos y una agenda cultural con tertulias y lecturas "
+            "infantiles. Su nombre rinde homenaje a Wilborada, patrona "
+            "de los libreros."
+        ),
+        "horario_texto": "Lunes a Sabado 10:00 AM - 7:00 PM, Domingo 12:00 PM - 4:00 PM",
+        "latitud": 4.6558210,
+        "longitud": -74.0589199,
+    },
+    {
+        "nombre": "Zona G",
+        "zona": "Chapinero",
+        "categorias": ["gastronomia"],
+        "descripcion": (
+            "Distrito gastronomico de Chapinero (la 'G' es de 'Gourmet'), "
+            "ubicado entre las calles 65 y 71. Reune restaurantes de "
+            "chefs colombianos reconocidos, con cocina internacional y "
+            "colombiana de alta gama."
+        ),
+        "horario_texto": "Varia segun el restaurante, en general de 12:00 PM a 11:00 PM",
+        "latitud": 4.6468856,
+        "longitud": -74.0559631,
+    },
+    {
+        "nombre": "Mesa Franca",
+        "zona": "Chapinero",
+        "categorias": ["restaurante"],
+        "descripcion": (
+            "Restaurante en Chapinero Alto conocido por su cocina "
+            "colombiana contemporanea con enfoque en ingredientes "
+            "locales. Muy bien valorado por su propuesta creativa."
+        ),
+        "horario_texto": (
+            "Martes 7:00 PM - 10:00 PM, "
+            "Miercoles a Jueves 12:00 PM - 4:00 PM y 7:00 PM - 10:00 PM, "
+            "Viernes 12:00 PM - 4:00 PM y 7:00 PM - 11:00 PM, "
+            "Sabado 1:00 PM - 11:00 PM, "
+            "Domingo 1:00 PM - 5:00 PM, "
+            "Lunes cerrado"
+        ),
+        "latitud": 4.6461291,
+        "longitud": -74.0601291,
+    },
+    {
+        "nombre": "Parque El Virrey",
+        "zona": "Chapinero",
+        "categorias": ["parque"],
+        "descripcion": (
+            "Parque lineal de 10 hectareas con un riachuelo, senderos "
+            "peatonales y ciclorruta. Ideal para trotar, hacer picnic o "
+            "pasear con mascotas, rodeado de cafes y restaurantes."
+        ),
+        "horario_texto": "Abierto las 24 horas",
+        "latitud": 4.6732479,
+        "longitud": -74.0540574,
+    },
+    {
+        "nombre": "Parque de la 93",
+        "zona": "Chapinero",
+        "categorias": ["parque"],
+        "descripcion": (
+            "Plaza publica rodeada de restaurantes y cafes con terraza, "
+            "sede frecuente de eventos culturales y actividades de "
+            "temporada. Cuenta con zona infantil y espacio para mascotas."
+        ),
+        "horario_texto": "Abierto las 24 horas",
+        "latitud": 4.6765317,
+        "longitud": -74.0484162,
+    },
+    {
+        "nombre": "Quebrada La Vieja",
+        "zona": "Chapinero",
+        "categorias": ["sendero"],
+        "descripcion": (
+            "Sendero ecologico dentro de la Reserva Forestal Protectora "
+            "de los Cerros Orientales, ideal para caminatas y "
+            "avistamiento de aves, con vistas panoramicas de Bogota. "
+            "Requiere reserva previa GRATUITA a traves de la pagina "
+            "'Caminos de los Cerros Orientales' (caminos.eaab.gov.co), "
+            "con confirmacion por codigo QR antes de ingresar."
+        ),
+        "horario_texto": (
+            "Lunes a Viernes 6:00 AM - 3:00 PM, "
+            "Sabado y Domingo 6:00 AM - 11:00 AM "
+            "(requiere reserva previa, ver descripcion)"
+        ),
+        "latitud": 4.6501285,
+        "longitud": -74.0485573,
     },
 ]
 

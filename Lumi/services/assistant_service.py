@@ -9,7 +9,8 @@ import random
 from services.nlp import (
     detect_intent,
     extract_category,
-    extract_place_name
+    extract_place_name,
+    extract_zona
 )
 
 from services.memory import get_memory
@@ -51,12 +52,15 @@ class AssistantService:
 
         place_name = extract_place_name(message)
 
+        zona = extract_zona(message)
+
         print(f"""
 ========================
 MENSAJE: {message}
 INTENT: {intent}
 LUGAR: {place_name}
 CATEGORÍA: {category}
+ZONA: {zona}
 ========================
 """)
 
@@ -198,6 +202,30 @@ CATEGORÍA: {category}
                 memory.remember_category(category)
 
                 context["lugares_categoria"] = places
+
+
+        # ==========================================
+        # 7.5. Buscar por zona (ej. "Chapinero")
+        # ==========================================
+
+        if zona:
+
+            zona_places = repository.get_by_zona(zona)
+
+            if zona_places:
+
+                context["zona"] = zona
+
+                context["lugares_zona"] = zona_places
+
+                # Se agregan a "places" para que el frontend reciba
+                # también estos lugares (mismo campo que categorías),
+                # sin duplicar los que ya estuvieran por categoría.
+                ids_ya_incluidos = {p["id"] for p in places}
+
+                for zona_place in zona_places:
+                    if zona_place["id"] not in ids_ya_incluidos:
+                        places.append(zona_place)
 
 
         # ==========================================
