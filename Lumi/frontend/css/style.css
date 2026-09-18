@@ -1025,3 +1025,297 @@ body {
     }
 
 }
+
+/* =========================================================
+   ACCESIBILIDAD (pilar del QTA: diseño inclusivo)
+========================================================= */
+
+.accessibility-bar {
+
+    position: absolute;
+
+    z-index: 25;
+
+    top: 12px;
+
+    right: 12px;
+
+    display: flex;
+
+    gap: 6px;
+
+}
+
+
+.accessibility-button {
+
+    width: 34px;
+
+    height: 34px;
+
+    border:
+        2px solid
+        rgba(255, 255, 255, 0.65);
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.25);
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.accessibility-button[aria-pressed="true"] {
+
+    background: white;
+
+    color: #006c59;
+
+    border-color: white;
+
+}
+
+
+/* ---------------------------------------------------------
+   TEXTO GRANDE
+--------------------------------------------------------- */
+
+body.text-large .logo-text {
+
+    font-size: 24px;
+
+}
+
+
+body.text-large .lumi-response,
+body.text-large .user-message {
+
+    font-size: 17px;
+
+}
+
+
+body.text-large #message {
+
+    font-size: 15px;
+
+}
+
+
+body.text-large .place-info h3 {
+
+    font-size: 15px;
+
+}
+
+
+body.text-large .place-info p {
+
+    font-size: 12px;
+
+}
+
+
+body.text-large .modal-info h2 {
+
+    font-size: 22px;
+
+}
+
+
+body.text-large .modal-info p {
+
+    font-size: 17px;
+
+}
+
+
+body.text-large .mic-button {
+
+    font-size: 21px;
+
+}
+
+
+/* ---------------------------------------------------------
+   ALTO CONTRASTE
+   (negro + amarillo: combinación de alto contraste estándar
+   y muy usada en accesibilidad web)
+--------------------------------------------------------- */
+
+body.high-contrast .lumi-app,
+body.high-contrast .lumi-header,
+body.high-contrast .chat-container {
+
+    background: #000000;
+
+}
+
+
+body.high-contrast .background-shape,
+body.high-contrast .tree {
+
+    /* Menos ruido visual, más foco en el contenido */
+    display: none;
+
+}
+
+
+body.high-contrast .lumi-logo {
+
+    background: #000000;
+
+    border-color: #ffff00;
+
+}
+
+
+body.high-contrast .logo-text {
+
+    color: #ffff00;
+
+}
+
+
+body.high-contrast .logo-dot {
+
+    background: #ffff00;
+
+}
+
+
+body.high-contrast .welcome-message,
+body.high-contrast .lumi-response {
+
+    background: #000000;
+
+    color: #ffff00;
+
+    border: 2px solid #ffff00;
+
+}
+
+
+body.high-contrast .user-message {
+
+    background: #ffff00;
+
+    color: #000000;
+
+    border: 2px solid #ffff00;
+
+}
+
+
+body.high-contrast .input-wrapper {
+
+    background: #000000;
+
+    border: 3px solid #ffff00;
+
+}
+
+
+body.high-contrast #message {
+
+    color: #ffff00;
+
+}
+
+
+body.high-contrast #message::placeholder {
+
+    color: #999900;
+
+}
+
+
+body.high-contrast .mic-button {
+
+    color: #ffff00;
+
+}
+
+
+body.high-contrast .send-button {
+
+    background: #ffff00;
+
+    color: #000000;
+
+    border: 2px solid #ffff00;
+
+}
+
+
+body.high-contrast .place-card {
+
+    background: #000000;
+
+    border: 2px solid #ffff00;
+
+}
+
+
+body.high-contrast .place-info,
+body.high-contrast .place-info h3,
+body.high-contrast .place-info p {
+
+    color: #ffff00;
+
+}
+
+
+body.high-contrast .modal-content {
+
+    background: #000000;
+
+    border: 3px solid #ffff00;
+
+}
+
+
+body.high-contrast .modal-info h2,
+body.high-contrast .modal-info p {
+
+    color: #ffff00;
+
+}
+
+
+body.high-contrast .close-modal {
+
+    background: #ffff00;
+
+    color: #000000;
+
+}
+
+
+body.high-contrast .accessibility-button {
+
+    border-color: #ffff00;
+
+}
+
+
+body.high-contrast .accessibility-button[aria-pressed="true"] {
+
+    background: #ffff00;
+
+    color: #000000;
+
+}
