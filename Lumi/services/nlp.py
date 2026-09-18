@@ -239,6 +239,38 @@ def detect_intent(text, debug=False):
         key=lambda item: (item[1], -_INTENT_ORDER.index(item[0])),
     )[0]
 
+    # 🆕 Frases como "que hay" o "que mas" son ambiguas: sirven
+    # tanto de saludo casual ("¿Qué hay?") como de pregunta real
+    # ("¿Qué hay en Chapinero?"). Si el mensaje menciona una
+    # categoría o zona conocida, YA NO es un simple saludo/
+    # despedida/agradecimiento: es una pregunta concreta sobre
+    # eso, y no debe cortar el flujo antes de buscarla.
+    intenciones_conversacionales = {"saludo", "despedida", "agradecimiento"}
+
+    if best_intent in intenciones_conversacionales:
+
+        if extract_category(text) or extract_zona(text):
+
+            if debug:
+                print(
+                    f"⚠️ '{best_intent}' descartado: el mensaje "
+                    "menciona una categoría/zona concreta"
+                )
+
+            scores.pop(best_intent, None)
+
+            if scores:
+                best_intent = max(
+                    scores.items(),
+                    key=lambda item: (item[1], -_INTENT_ORDER.index(item[0])),
+                )[0]
+            else:
+                # No quedó ninguna otra intención detectada:
+                # "recomendar" es un buen intento genérico de
+                # búsqueda (activa el paso de recomendación en
+                # assistant_service.py).
+                best_intent = "recomendar"
+
     if debug:
         print(f"✅ Intención elegida: {best_intent}")
 
