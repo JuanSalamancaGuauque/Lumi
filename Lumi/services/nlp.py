@@ -64,6 +64,21 @@ CATEGORIES = {
 
 
 # ---------------------------------------------------------------------------
+# Diccionario de zonas/localidades (sinónimos)
+# ---------------------------------------------------------------------------
+# El valor de cada clave debe coincidir EXACTAMENTE con el campo
+# "nombre" de la tabla zona (ver database/init_db.py), porque
+# repository.get_by_zona() hace un match exacto contra zona.nombre.
+
+ZONAS = {
+    "Chapinero": [
+        "chapinero", "chapi", "zona g", "quinta camacho",
+        "chapinero alto", "chapinero central",
+    ],
+}
+
+
+# ---------------------------------------------------------------------------
 # Diccionario de intenciones (orden = prioridad en caso de empate)
 # ---------------------------------------------------------------------------
 
@@ -249,6 +264,29 @@ def extract_category(text):
             best_category = category
 
     return best_category
+
+
+def extract_zona(text):
+    """
+    Busca si el usuario mencionó una zona/localidad conocida (ej.
+    "Chapinero"), usando el mismo enfoque de sinónimos que
+    extract_category(). Devuelve el nombre EXACTO tal como está
+    guardado en la tabla zona, listo para usarse directo con
+    repository.get_by_zona(zona).
+    """
+    normalized = normalize_text(text)
+    best_zona = None
+    best_score = 0
+
+    for zona_name, keywords in ZONAS.items():
+        score = sum(
+            1 for keyword in keywords if _keyword_pattern(keyword).search(normalized)
+        )
+        if score > best_score:
+            best_score = score
+            best_zona = zona_name
+
+    return best_zona
 
 
 def extract_place_name(text, fuzzy_cutoff=0.85):
