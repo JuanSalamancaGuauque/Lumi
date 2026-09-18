@@ -4,9 +4,11 @@
 # ==========================================
 
 import os
+import time
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 
 # ==========================================
@@ -31,6 +33,37 @@ if API_KEY:
 else:
 
     print("⚠️ No se encontró GEMINI_API_KEY")
+
+
+# ==========================================
+# Reintentos ante saturación temporal de Gemini
+# ==========================================
+# 503 (UNAVAILABLE) y 429 (RESOURCE_EXHAUSTED) son problemas
+# TEMPORALES del lado de Google (el modelo está saturado), no
+# errores de nuestro código. Google mismo recomienda reintentar
+# con espera progresiva antes de rendirse.
+
+MAX_REINTENTOS = 2          # + el intento original = 3 intentos en total
+ESPERA_INICIAL_SEGUNDOS = 2  # se va duplicando en cada reintento
+
+
+def _es_error_temporal(error):
+    mensaje = str(error)
+    return any(
+        codigo in mensaje
+        for codigo in ("503", "429", "UNAVAILABLE", "RESOURCE_EXHAUSTED")
+    )
+
+
+# 🆕 Config que le dice al SDK explícitamente que no estamos
+# usando "automatic function calling" (no mandamos herramientas
+# de ningún tipo). Sin esto, el SDK saca un warning de "AFC no
+# recomendado" en cada llamada, aunque no lo estemos usando.
+GENERATION_CONFIG = types.GenerateContentConfig(
+    automatic_function_calling=types.AutomaticFunctionCallingConfig(
+        disable=True
+    )
+)
 
 
 # ==========================================
@@ -103,21 +136,41 @@ INSTRUCCIONES IMPORTANTES:
     Si el historial está vacío, ignóralo.
 """
 
-    try:
+    espera = ESPERA_INICIAL_SEGUNDOS
 
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=prompt
-        )
+    for intento in range(1, MAX_REINTENTOS + 2):  # +2: intento original + N reintentos
 
-        return response.text.strip()
+        try:
 
-    except Exception as error:
+            response = client.models.generate_content(
+                model="gemini-3.1-flash-lite",
+                contents=prompt,
+                config=GENERATION_CONFIG,
+            )
 
-        print("❌ Error con Gemini:")
-        print(error)
+            return response.text.strip()
 
-        return (
-            "Lo siento, tuve un pequeño problema "
-            "y no pude responderte en este momento."
-        )
+        except Exception as error:
+
+            es_ultimo_intento = intento == MAX_REINTENTOS + 1
+
+            if _es_error_temporal(error) and not es_ultimo_intento:
+
+                print(
+                    f"⏳ Gemini ocupado (intento {intento}/{MAX_REINTENTOS + 1}), "
+                    f"reintentando en {espera}s..."
+                )
+
+                time.sleep(espera)
+
+                espera *= 2  # espera progresiva: 2s, 4s, ...
+
+                continue
+
+            print("❌ Error con Gemini:")
+            print(error)
+
+            return (
+                "Lo siento, tuve un pequeño problema "
+                "y no pude responderte en este momento."
+            )
