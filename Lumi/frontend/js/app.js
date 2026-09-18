@@ -3,6 +3,45 @@
 // APP
 // =====================================================
 
+// =====================================================
+// ICONOGRAFÍA POR CATEGORÍA
+// =====================================================
+// El QTA menciona la iconografía como parte de la
+// accesibilidad: un ícono ayuda a reconocer de qué tipo de
+// lugar se trata de un vistazo, sin depender solo del texto.
+
+const CATEGORY_ICONS = {
+    museo: "🏛️",
+    parque: "🌳",
+    mirador: "🌄",
+    iglesia: "⛪",
+    libreria: "📚",
+    gastronomia: "🍽️",
+    restaurante: "🍴",
+    sendero: "🥾",
+};
+
+
+function getCategoryIcon(place) {
+
+    if (
+        Array.isArray(place.categorias) &&
+        place.categorias.length > 0
+    ) {
+
+        return (
+            CATEGORY_ICONS[
+                place.categorias[0]
+            ] || "📍"
+        );
+
+    }
+
+    return "📍";
+
+}
+
+
 const input =
     document.getElementById("message");
 
@@ -78,6 +117,9 @@ async function askLumi(message) {
 
     showLoading();
 
+    // 🆕 Lumi "piensa" mientras esperamos al backend
+    setAvatarState("pensando");
+
 
     try {
 
@@ -100,10 +142,17 @@ async function askLumi(message) {
 
 
         // Hablar
+        // (avatar.js pasa a "hablando" cuando arranca la voz,
+        // y a "feliz" cuando termina, ver speech.js)
 
         if (data.speech) {
 
             speak(data.speech);
+
+        }
+        else {
+
+            setAvatarState("feliz");
 
         }
 
@@ -114,6 +163,15 @@ async function askLumi(message) {
 
 
         hideLoading();
+
+        // 🆕 Algo falló de verdad (red, servidor caído, etc.)
+        setAvatarState("error");
+
+        setTimeout(() => {
+
+            setAvatarState("feliz");
+
+        }, 4000);
 
 
         showLumiResponse({
@@ -208,39 +266,48 @@ function showLumiResponse(data) {
 
 function getPlacesFromResponse(data) {
 
-    if (
-        Array.isArray(
-            data.places
-        )
-    ) {
+    // 🆕 El backend a veces manda un solo lugar (data.place,
+    // ej. al preguntar por "Monserrate") y otras veces varios
+    // (data.places, por categoría o zona). Antes solo se
+    // revisaba "places", así que las respuestas de un solo
+    // lugar nunca mostraban nada. Ahora se unifican ambos casos
+    // en una sola lista, sin duplicar si el mismo lugar viene
+    // en las dos.
 
-        return data.places;
+    const places = [];
+
+    if (data.place) {
+
+        places.push(
+            data.place
+        );
 
     }
 
 
     if (
         Array.isArray(
-            data.images
+            data.places
         )
     ) {
 
-        return data.images.map(
-            (image, index) => {
+        data.places.forEach(
+            (place) => {
 
-                return {
+                const yaEsta =
+                    places.some(
+                        (p) =>
+                            p.id ===
+                            place.id
+                    );
 
-                    name:
-                        "Lugar " +
-                        (index + 1),
+                if (!yaEsta) {
 
-                    image:
-                        image,
+                    places.push(
+                        place
+                    );
 
-                    description:
-                        "Descubre este lugar con Lumi."
-
-                };
+                }
 
             }
         );
@@ -248,7 +315,7 @@ function getPlacesFromResponse(data) {
     }
 
 
-    return [];
+    return places;
 
 }
 
@@ -286,19 +353,49 @@ function createPlacesGallery(
                     "place-card";
 
 
-                const image =
-                    document.createElement(
-                        "img"
+                // 🆕 Campos reales que manda el backend
+                // (antes se usaban name/image/description,
+                // que no existen: siempre salían vacíos).
+                const nombre =
+                    place.nombre ||
+                    "Lugar";
+
+                const descripcion =
+                    place.descripcion ||
+                    "";
+
+                // imagen_principal es solo el nombre del
+                // archivo (ej. "monserrate.jpg"), hay que
+                // anteponerle la ruta donde Flask lo sirve.
+                // Puede venir null si el lugar todavía no
+                // tiene foto real (la mayoría de Chapinero).
+                const imageUrl =
+                    place.imagen_principal
+                        ? "/static/images/" +
+                          encodeURIComponent(
+                              place.imagen_principal
+                          )
+                        : null;
+
+
+                if (imageUrl) {
+
+                    const image =
+                        document.createElement(
+                            "img"
+                        );
+
+                    image.src =
+                        imageUrl;
+
+                    image.alt =
+                        nombre;
+
+                    card.appendChild(
+                        image
                     );
 
-
-                image.src =
-                    place.image;
-
-
-                image.alt =
-                    place.name ||
-                    "Lugar";
+                }
 
 
                 const info =
@@ -318,8 +415,9 @@ function createPlacesGallery(
 
 
                 title.textContent =
-                    place.name ||
-                    "Lugar";
+                    getCategoryIcon(place) +
+                    " " +
+                    nombre;
 
 
                 const description =
@@ -329,15 +427,12 @@ function createPlacesGallery(
 
 
                 description.textContent =
-                    place.description ||
-                    "";
+                    descripcion;
 
 
                 info.appendChild(title);
 
                 info.appendChild(description);
-
-                card.appendChild(image);
 
                 card.appendChild(info);
 
@@ -347,11 +442,9 @@ function createPlacesGallery(
                     () => {
 
                         openImage(
-                            place.image,
-                            place.name ||
-                                "Lugar",
-                            place.description ||
-                                ""
+                            imageUrl,
+                            nombre,
+                            descripcion
                         );
 
                     }
@@ -381,8 +474,26 @@ function openImage(
     description
 ) {
 
-    modalImage.src =
-        image;
+    // 🆕 Varios lugares (sobre todo los de Chapinero) todavía
+    // no tienen foto real. En vez de mostrar un ícono de
+    // imagen rota, ocultamos el <img> por completo.
+    if (image) {
+
+        modalImage.src =
+            image;
+
+        modalImage.style.display =
+            "";
+
+    }
+    else {
+
+        modalImage.src = "";
+
+        modalImage.style.display =
+            "none";
+
+    }
 
     modalTitle.textContent =
         title;
@@ -405,6 +516,9 @@ function closeImageModal() {
     );
 
     modalImage.src = "";
+
+    modalImage.style.display =
+        "";
 
 }
 

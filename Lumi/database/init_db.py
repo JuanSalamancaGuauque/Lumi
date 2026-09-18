@@ -4,8 +4,9 @@ Script de inicializacion / seed de la base de datos de Lumi.
 MODELO FASE 1: reemplaza la tabla plana "places" por un modelo
 normalizado: zona, categoria, lugar, lugar_categoria (tabla puente
 para la relacion muchos-a-muchos) e imagen. Tambien agrega el
-catalogo estado_avatar para la mascota (pendiente de nombres finales
-del equipo de animacion).
+catalogo estado_avatar para la mascota (YA con los 5 archivos
+reales entregados por el equipo de animacion: saludo, pensando,
+hablando, feliz y error).
 
 FASE 3 (zona piloto): se agrega la zona "Chapinero" con 7 lugares
 reales (verificados via busqueda web y Google Places), 5 categorias
@@ -259,29 +260,40 @@ LUGARES = [
     },
 ]
 
-# PROVISIONAL: nombres de ejemplo mientras el equipo de animacion entrega
-# los GIFs reales y la lista definitiva de estados. Hay que actualizar
-# esto (nombre_estado y archivo_gif) apenas la tengan.
+# YA REAL: el equipo de animacion entrego estos 5 GIFs (en
+# static/images/). Ojo, cambiaron respecto al plan original:
+# no llego "despedida", pero si llegaron "feliz" y "error".
+# El frontend los usa en frontend/js/avatar.js (AVATAR_STATES).
 ESTADOS_AVATAR = [
     {
         "nombre_estado": "saludo",
-        "archivo_gif": "avatar_saludo.gif",
-        "descripcion": "Se activa al iniciar la conversacion.",
-    },
-    {
-        "nombre_estado": "hablando",
-        "archivo_gif": "avatar_hablando.gif",
-        "descripcion": "Se activa mientras Lumi esta respondiendo.",
+        "archivo_gif": "SALUDO LUMI.gif",
+        "descripcion": "Se activa al iniciar la conversacion o saludar.",
     },
     {
         "nombre_estado": "pensando",
-        "archivo_gif": "avatar_pensando.gif",
+        "archivo_gif": "PENSANDO LUMI.gif",
         "descripcion": "Se activa mientras se consulta a Gemini.",
     },
     {
-        "nombre_estado": "despedida",
-        "archivo_gif": "avatar_despedida.gif",
-        "descripcion": "Se activa al despedirse.",
+        "nombre_estado": "hablando",
+        "archivo_gif": "HABLANDO LUMI.gif",
+        "descripcion": "Se activa mientras Lumi esta respondiendo por voz.",
+    },
+    {
+        "nombre_estado": "feliz",
+        "archivo_gif": "FELIZ LUMI.gif",
+        "descripcion": "Estado de reposo, despues de responder.",
+    },
+    {
+        "nombre_estado": "idle",
+        "archivo_gif": "IDLE LUMI.gif",
+        "descripcion": "Reposo general, cuando no hay actividad en la conversacion.",
+    },
+    {
+        "nombre_estado": "error",
+        "archivo_gif": "ERROR LUMI.gif",
+        "descripcion": "Se activa cuando falla la conexion o la IA.",
     },
 ]
 

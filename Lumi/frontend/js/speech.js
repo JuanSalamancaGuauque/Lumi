@@ -167,6 +167,11 @@ function speak(text) {
         !("speechSynthesis" in window)
     ) {
 
+        // 🆕 Sin soporte de voz: no hay "hablando" que mostrar,
+        // pasamos directo a feliz para no dejar a Lumi
+        // pensando para siempre.
+        setAvatarState("feliz");
+
         return;
 
     }
@@ -188,6 +193,26 @@ function speak(text) {
     utterance.pitch = 1;
 
     utterance.volume = 1;
+
+
+    // 🆕 Avatar sincronizado con el ciclo real de la voz
+    utterance.onstart = () => {
+
+        setAvatarState("hablando");
+
+    };
+
+    utterance.onend = () => {
+
+        setAvatarState("feliz");
+
+    };
+
+    utterance.onerror = () => {
+
+        setAvatarState("feliz");
+
+    };
 
 
     speechSynthesis.speak(

@@ -72,7 +72,38 @@
 
 
             <!-- =================================================
-                 ESPACIO PARA EL GIF DE LUMI
+                 ACCESIBILIDAD (pilar del QTA)
+            ================================================== -->
+
+            <div class="accessibility-bar">
+
+                <button
+                    id="toggle-text-size"
+                    class="accessibility-button"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Aumentar tamaño de texto"
+                    title="Texto grande"
+                >
+                    A+
+                </button>
+
+                <button
+                    id="toggle-contrast"
+                    class="accessibility-button"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Alto contraste"
+                    title="Alto contraste"
+                >
+                    ◐
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 GIF DE LUMI (mediador visual/emocional)
             ================================================== -->
 
             <div
@@ -81,12 +112,10 @@
             >
 
                 <!--
-
-                    AQUÍ NO PONEMOS NADA TODAVÍA.
-
-                    Este espacio está reservado para
-                    tu GIF de Lumi.
-
+                    El <img> se crea dinamicamente desde avatar.js
+                    (ver setAvatarState). Aqui no ponemos nada fijo
+                    porque el GIF cambia segun el estado de la
+                    conversacion (saludo, pensando, hablando, etc).
                 -->
 
             </div>
@@ -230,10 +259,23 @@
 
     <!-- =================================================
          JAVASCRIPT
-         
+
          IMPORTANTE:
          Flask los sirve mediante /js/
+
+         avatar.js va PRIMERO porque app.js y speech.js
+         llaman a su función setAvatarState().
     ================================================== -->
+
+    <script
+        src="/js/avatar.js"
+        defer
+    ></script>
+
+    <script
+        src="/js/accessibility.js"
+        defer
+    ></script>
 
     <script
         src="/js/api.js"
