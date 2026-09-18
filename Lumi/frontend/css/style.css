@@ -1,56 +1,1027 @@
-body{
+/* =========================================================
+   LUMI
+========================================================= */
 
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
+* {
+    box-sizing: border-box;
+}
 
-    background:#f3f5f7;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+html,
+body {
 
-    height:100vh;
+    margin: 0;
+
+    padding: 0;
+
+    width: 100%;
+
+    min-height: 100%;
 
 }
 
-.container{
 
-    width:700px;
+body {
 
-    background:white;
+    font-family:
+        "Trebuchet MS",
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    padding:30px;
+    background: #444444;
 
-    border-radius:15px;
+    min-height: 100vh;
 
-    box-shadow:0 10px 30px rgba(0,0,0,.15);
+    display: flex;
 
-}
+    justify-content: center;
 
-input{
-
-    width:80%;
-
-    padding:12px;
-
-    font-size:16px;
+    align-items: center;
 
 }
 
-button{
 
-    padding:12px 18px;
+/* =========================================================
+   APLICACIÓN
+========================================================= */
 
-    cursor:pointer;
+.lumi-app {
 
-    margin-left:5px;
+    width: 100%;
+
+    max-width: 430px;
+
+    height: 100vh;
+
+    min-height: 600px;
+
+    background: #f1f1f1;
+
+    position: relative;
+
+    overflow: hidden;
 
 }
 
-#response{
 
-    margin-top:25px;
+/* =========================================================
+   HEADER
+========================================================= */
 
-    font-size:18px;
+.lumi-header {
+
+    height: 43%;
+
+    min-height: 290px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #006c59;
+
+}
+
+
+/* =========================================================
+   FORMAS VERDES
+========================================================= */
+
+.background-shape {
+
+    position: absolute;
+
+    z-index: 1;
+
+    background: #00835f;
+
+}
+
+
+.shape-one {
+
+    width: 185px;
+
+    height: 48px;
+
+    top: 42px;
+
+    left: 50%;
+
+    border-radius: 40px;
+
+    transform:
+        translateX(-50%)
+        rotate(-38deg);
+
+}
+
+
+.shape-two {
+
+    width: 170px;
+
+    height: 135px;
+
+    left: 50%;
+
+    bottom: -50px;
+
+    border-radius:
+        100px
+        100px
+        25px
+        25px;
+
+    transform:
+        translateX(-50%);
+
+    background: #00765e;
+
+}
+
+
+/* =========================================================
+   ÁRBOLES
+========================================================= */
+
+.tree {
+
+    position: absolute;
+
+    bottom: 0;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 18px solid transparent;
+
+    border-right: 18px solid transparent;
+
+    border-bottom: 35px solid #004f47;
+
+    z-index: 5;
+
+}
+
+
+.tree-one {
+
+    left: 20px;
+
+}
+
+
+.tree-two {
+
+    left: 60px;
+
+    border-left-width: 14px;
+
+    border-right-width: 14px;
+
+    border-bottom-width: 27px;
+
+}
+
+
+.tree-three {
+
+    right: 55px;
+
+    border-left-width: 15px;
+
+    border-right-width: 15px;
+
+    border-bottom-width: 31px;
+
+}
+
+
+.tree-four {
+
+    right: 20px;
+
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.lumi-logo {
+
+    position: absolute;
+
+    z-index: 20;
+
+    top: 42px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 132px;
+
+    height: 39px;
+
+    background: #064e42;
+
+    border:
+        3px solid
+        #f4f4f4;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.logo-text {
+
+    color: white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 21px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+}
+
+
+.logo-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    background: white;
+
+    border-radius: 50%;
+
+}
+
+
+/* =========================================================
+   ESPACIO DEL PÁJARO / GIF
+========================================================= */
+
+.lumi-avatar {
+
+    position: absolute;
+
+    z-index: 10;
+
+    left: 50%;
+
+    bottom: 24px;
+
+    transform:
+        translateX(-50%);
+
+    width: 175px;
+
+    height: 160px;
+
+}
+
+
+/*
+
+    IMPORTANTE:
+
+    Este espacio queda vacío.
+
+    Cuando tengas el GIF puedes ponerlo aquí.
+
+*/
+
+
+.lumi-avatar img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat-container {
+
+    position: absolute;
+
+    z-index: 30;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    height: 61%;
+
+    background: #f2f2f2;
+
+    border-radius:
+        32px
+        32px
+        0
+        0;
+
+    padding:
+        20px
+        20px
+        85px
+        20px;
+
+    overflow-y: auto;
+
+}
+
+
+/* =========================================================
+   MENSAJE DE LUMI
+========================================================= */
+
+.lumi-response {
+
+    display: inline-block;
+
+    max-width: 82%;
+
+    padding:
+        11px
+        15px;
+
+    background: #d0d0d0;
+
+    color: #414141;
+
+    border-radius:
+        0
+        17px
+        17px
+        17px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    margin-bottom: 12px;
+
+}
+
+
+.welcome-message {
+
+    display: block;
+
+    width: fit-content;
+
+}
+
+
+/* =========================================================
+   RESPUESTAS
+========================================================= */
+
+.response-container {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   MENSAJE DEL USUARIO
+========================================================= */
+
+.user-message {
+
+    align-self: flex-end;
+
+    max-width: 78%;
+
+    padding:
+        10px
+        14px;
+
+    color: white;
+
+    background: #007b61;
+
+    border-radius:
+        17px
+        0
+        17px
+        17px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading-message {
+
+    opacity: 0.65;
+
+    font-style: italic;
+
+}
+
+
+/* =========================================================
+   GALERÍA
+========================================================= */
+
+.places-grid {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        1.25fr
+        0.7fr;
+
+    grid-template-rows:
+        90px
+        90px;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.place-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 3px;
+
+    background: #79798b;
+
+    cursor: pointer;
+
+}
+
+
+.place-card:first-child {
+
+    grid-row:
+        1 / 3;
+
+}
+
+
+.place-card img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.place-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    height: 50%;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0, 0, 0, 0.7)
+        );
+
+}
+
+
+.place-info {
+
+    position: absolute;
+
+    z-index: 2;
+
+    bottom: 7px;
+
+    left: 8px;
+
+    right: 8px;
+
+    color: white;
+
+}
+
+
+.place-info h3 {
+
+    margin: 0;
+
+    font-size: 12px;
+
+}
+
+
+.place-info p {
+
+    margin:
+        2px
+        0
+        0;
+
+    font-size: 9px;
+
+}
+
+
+/* =========================================================
+   BARRA INFERIOR
+========================================================= */
+
+.input-area {
+
+    position: absolute;
+
+    z-index: 100;
+
+    left: 20px;
+
+    right: 20px;
+
+    bottom: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.input-wrapper {
+
+    flex: 1;
+
+    height: 40px;
+
+    background: white;
+
+    border:
+        2px solid
+        #00a35f;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+}
+
+
+#message {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding:
+        0
+        5px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 11px;
+
+}
+
+
+#message::placeholder {
+
+    color: #aaaaaa;
+
+}
+
+
+/* =========================================================
+   MICRÓFONO
+========================================================= */
+
+.mic-button {
+
+    width: 34px;
+
+    height: 100%;
+
+    border: none;
+
+    background: transparent;
+
+    color: #009d5d;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* MICRÓFONO GRABANDO */
+
+.mic-button.recording {
+
+    color: #e53935;
+
+    animation:
+        microphonePulse
+        1s
+        infinite;
+
+}
+
+
+@keyframes microphonePulse {
+
+    0% {
+
+        transform: scale(1);
+
+    }
+
+    50% {
+
+        transform: scale(1.18);
+
+    }
+
+    100% {
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   BOTÓN ENVIAR
+========================================================= */
+
+.send-button {
+
+    width: 40px;
+
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #009e5c;
+
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 0;
+
+}
+
+
+.send-button:hover {
+
+    transform: scale(1.05);
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.image-modal {
+
+    position: fixed;
+
+    z-index: 1000;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 45, 40, 0.92);
+
+}
+
+
+.image-modal.active {
+
+    display: flex;
+
+}
+
+
+.modal-content {
+
+    width: min(
+        500px,
+        100%
+    );
+
+    background: #eeeeee;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+}
+
+
+.modal-content img {
+
+    width: 100%;
+
+    max-height: 60vh;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.modal-info {
+
+    padding: 18px;
+
+}
+
+
+.modal-info h2 {
+
+    margin:
+        0
+        0
+        7px;
+
+    color: #006c59;
+
+}
+
+
+.modal-info p {
+
+    margin: 0;
+
+    color: #555;
+
+    line-height: 1.45;
+
+}
+
+
+.close-modal {
+
+    position: fixed;
+
+    top: 20px;
+
+    left: 20px;
+
+    width: 43px;
+
+    height: 43px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #00a35f;
+
+    color: white;
+
+    font-size: 32px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width: 600px) {
+
+    body {
+
+        padding: 25px;
+
+    }
+
+
+    .lumi-app {
+
+        height: min(
+            850px,
+            92vh
+        );
+
+        border-radius: 25px;
+
+        box-shadow:
+            0 20px 60px
+            rgba(0, 0, 0, 0.35);
+
+    }
+
+}
+
+
+/* =========================================================
+   PC
+========================================================= */
+
+@media (min-width: 900px) {
+
+    .lumi-app {
+
+        max-width: 900px;
+
+        height: 750px;
+
+    }
+
+
+    .chat-container {
+
+        padding-left: 45px;
+
+        padding-right: 45px;
+
+    }
+
+
+    .lumi-avatar {
+
+        width: 220px;
+
+        height: 190px;
+
+    }
+
+
+    .input-area {
+
+        left: 45px;
+
+        right: 45px;
+
+    }
+
+
+    #message {
+
+        font-size: 13px;
+
+    }
+
+
+    .lumi-response,
+    .user-message {
+
+        font-size: 14px;
+
+    }
+
+}
+
+
+/* =========================================================
+   CELULARES PEQUEÑOS
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .lumi-header {
+
+        min-height: 260px;
+
+    }
+
+
+    .lumi-avatar {
+
+        width: 150px;
+
+        height: 135px;
+
+    }
+
+
+    .chat-container {
+
+        padding-left: 16px;
+
+        padding-right: 16px;
+
+    }
+
+
+    .input-area {
+
+        left: 14px;
+
+        right: 14px;
+
+    }
 
 }
