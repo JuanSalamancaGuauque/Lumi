@@ -28,10 +28,6 @@ const lumiAvatarSpeech =
 
 let recognition = null;
 
-let isRecording = false;
-
-let baseText = "";   // texto que ya había en el campo antes de grabar
-
 
 // =====================================================
 // COMPROBAR SOPORTE
@@ -68,7 +64,7 @@ if (recognition) {
 
 
     recognition.interimResults =
-        true;
+        false;
 
 
     recognition.continuous =
@@ -86,10 +82,8 @@ if (recognition) {
     recognition.onstart =
         () => {
 
-            isRecording = true;
-
-            baseText = inputSpeech.value.trim();
-
+            micButton.textContent =
+                "🔴";
 
 
             micButton.classList.add(
@@ -111,8 +105,8 @@ if (recognition) {
     recognition.onend =
         () => {
 
-            isRecording = false;
-
+            micButton.textContent =
+                "🎙";
 
 
             micButton.classList.remove(
@@ -133,13 +127,14 @@ if (recognition) {
     recognition.onerror =
         (event) => {
 
-            isRecording = false;
-
-
             console.error(
                 "Error de reconocimiento:",
                 event
             );
+
+
+            micButton.textContent =
+                "🎙";
 
 
             micButton.classList.remove(
@@ -160,26 +155,19 @@ if (recognition) {
     recognition.onresult =
         (event) => {
 
-            // Se junta lo ya confirmado + lo que se está diciendo ahora
-
-            let transcript = "";
-
-            for (let i = 0; i < event.results.length; i++) {
-
-                transcript +=
-                    event.results[i][0].transcript;
-
-            }
+            const text =
+                event
+                    .results[0][0]
+                    .transcript;
 
 
             inputSpeech.value =
-                (baseText
-                    ? baseText + " "
-                    : "") +
-                transcript.trim();
+                text;
 
 
-            // NO se envía: la persona decide cuándo enviarlo.
+            askLumi(
+                text
+            );
 
         };
 
@@ -206,24 +194,7 @@ micButton.addEventListener(
 
         try {
 
-            if (isRecording) {
-
-                // Segundo toque: detener la grabación
-
-                recognition.stop();
-
-            }
-            else {
-
-                // Que Lumi no se escuche a sí misma
-
-                if ("speechSynthesis" in window) {
-                    speechSynthesis.cancel();
-                }
-
-                recognition.start();
-
-            }
+            recognition.start();
 
         }
         catch (error) {
