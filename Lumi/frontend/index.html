@@ -31,8 +31,7 @@
 
         <section class="lumi-header">
 
-
-            <!-- Fondo de árboles -->
+            <!-- Capa 1: árboles de fondo -->
             <img
                 class="lumi-trees"
                 src="/static/images/arboles%20fondo%20lumi.png"
@@ -40,56 +39,30 @@
                 aria-hidden="true"
             >
 
-
-            <!-- Casita -->
-            <picture class="lumi-house">
-
-                <source
-                    media="(min-width: 900px)"
-                    srcset="/static/images/casita%20lumi%20pc.png"
-                >
-
-                <img
-                    src="/static/images/casita%20lumi%20cel.png"
-                    alt="Casita de Lumi"
-                >
-
-            </picture>
-
-
-            <!-- Logo -->
-            <div class="lumi-logo">
-
-                <span class="logo-dot"></span>
-
-                <span class="logo-text">
-                    LUMI
-                </span>
-
-                <span class="logo-dot"></span>
-
-            </div>
-
-
-            <!-- =================================================
-                 GIF DE LUMI
-            ================================================== -->
-
+            <!-- Capa 2: Lumi (animaciones). Va DETRÁS de la casita -->
             <div
                 id="lumi-avatar"
                 class="lumi-avatar"
             >
-
                 <img
                     id="lumi-avatar-image"
                     src="/static/images/SALUDO%20LUMI.gif"
                     alt="Lumi"
                 >
-
             </div>
 
+            <!-- Capa 3: casita (un solo PNG para celular y escritorio) -->
+            <div class="lumi-house">
+                <img
+                    src="/static/images/casita%20lumi%20pc.png"
+                    alt="Casita de Lumi"
+                >
+            </div>
 
         </section>
+
+        <!-- Degradado de profundidad entre escenario y chat -->
+        <div class="lumi-shade" aria-hidden="true"></div>
 
 
 
@@ -151,7 +124,12 @@
                     type="button"
                     aria-label="Hablar con Lumi"
                 >
-                    🎙
+                    <svg class="mic-icon" viewBox="0 0 22 26" aria-hidden="true">
+                        <rect x="7" y="1" width="8" height="14" rx="4" fill="currentColor"/>
+                        <path d="M2.5 11.5a8.5 8.5 0 0 0 17 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                        <line x1="11" y1="20" x2="11" y2="25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                    <span class="rec-dot" aria-hidden="true"></span>
                 </button>
 
 
@@ -176,7 +154,9 @@
                 type="button"
                 aria-label="Enviar mensaje"
             >
-                ➤
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 3.5L21.5 12L3 20.5L7.5 12Z" fill="#EFEFEF" stroke="#EFEFEF" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
             </button>
 
 
@@ -263,6 +243,13 @@
 
     <script
         src="/js/speech.js"
+        defer
+    ></script>
+
+    <!-- Herramienta de ajuste: solo se activa con ?tune en la URL.
+         Puedes borrar esta línea cuando termines de ajustar. -->
+    <script
+        src="/js/tuner.js"
         defer
     ></script>
 
