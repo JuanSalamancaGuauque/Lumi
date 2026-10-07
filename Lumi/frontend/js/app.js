@@ -120,60 +120,81 @@ function setLumiAnimation(tipo) {
 
 // =====================================================
 // SCROLL AUTOMÁTICO
+//
+// Siempre se muestra lo más reciente. Si la persona sube
+// a releer, el chat no la "arrastra" de vuelta hasta que
+// envíe otro mensaje.
 // =====================================================
 
-function scrollChatToBottom(smooth = true) {
+let stickToBottom = true;
+
+
+// El parámetro se conserva por compatibilidad con las
+// llamadas existentes, pero ya no se usa scroll suave:
+// varios scrolls suaves seguidos se cancelaban entre sí
+// y el chat se quedaba arriba.
+
+function scrollChatToBottom() {
 
     if (!chatMessages) {
         return;
     }
 
 
-    requestAnimationFrame(() => {
+    stickToBottom = true;
 
-        chatMessages.scrollTo({
 
-            top:
-                chatMessages.scrollHeight,
+    const goToBottom = () => {
 
-            behavior:
-                smooth
-                    ? "smooth"
-                    : "auto"
+        chatMessages.scrollTop =
+            chatMessages.scrollHeight;
 
-        });
+    };
 
-    });
+
+    // Inmediato y otra vez cuando el layout ya se calculó
+
+    goToBottom();
+
+    requestAnimationFrame(goToBottom);
 }
 
 
-// =====================================================
-// OBSERVADOR DEL CHAT
-//
-// Si aparece cualquier mensaje nuevo,
-// automáticamente baja al final.
-// =====================================================
+if (chatMessages) {
 
-if (responseDiv) {
+    // ¿La persona está leyendo mensajes anteriores?
 
-    const chatObserver =
-        new MutationObserver(() => {
+    chatMessages.addEventListener(
+        "scroll",
+        () => {
 
-            scrollChatToBottom(true);
+            const distance =
+                chatMessages.scrollHeight -
+                chatMessages.scrollTop -
+                chatMessages.clientHeight;
 
-        });
+            stickToBottom =
+                distance < 80;
+
+        }
+    );
+}
 
 
-    chatObserver.observe(
+// Si el contenido crece (mensajes nuevos, imágenes, etc.)
+// y la persona está al final, se mantiene abajo.
 
-        responseDiv,
+if (responseDiv && "ResizeObserver" in window) {
 
-        {
-            childList: true,
-            subtree: true
+    new ResizeObserver(() => {
+
+        if (stickToBottom) {
+
+            scrollChatToBottom();
+
         }
 
-    );
+    }).observe(responseDiv);
 }
 
 
@@ -1161,6 +1182,9 @@ document.addEventListener(
 
 function showLoading() {
 
+    document.body.classList.add("is-busy");
+
+
     // Evitar duplicados
 
     if (
@@ -1218,6 +1242,9 @@ function showLoading() {
 // =====================================================
 
 function hideLoading() {
+
+    document.body.classList.remove("is-busy");
+
 
     const loading =
         document.getElementById(
