@@ -12,10 +12,6 @@
 
     <title>Lumi</title>
 
-    <!-- IMPORTANTE:
-         Flask sirve el CSS mediante /css/
-    -->
-
     <link
         rel="stylesheet"
         href="/css/style.css"
@@ -29,35 +25,39 @@
     <main class="lumi-app">
 
 
-        <!-- =================================================
-             PARTE SUPERIOR
-        ================================================== -->
+        <!-- =====================================================
+             ESCENARIO / MASCOTA
+        ====================================================== -->
 
         <section class="lumi-header">
 
 
-            <!-- Fondo -->
-
-            <div class="background-shape shape-one"></div>
-
-            <div class="background-shape shape-two"></div>
-
-
-            <!-- Árboles -->
-
-            <div class="tree tree-one"></div>
-
-            <div class="tree tree-two"></div>
-
-            <div class="tree tree-three"></div>
-
-            <div class="tree tree-four"></div>
+            <!-- Fondo de árboles -->
+            <img
+                class="lumi-trees"
+                src="/static/images/arboles%20fondo%20lumi.png"
+                alt=""
+                aria-hidden="true"
+            >
 
 
-            <!-- =================================================
-                 LOGO
-            ================================================== -->
+            <!-- Casita -->
+            <picture class="lumi-house">
 
+                <source
+                    media="(min-width: 900px)"
+                    srcset="/static/images/casita%20lumi%20pc.png"
+                >
+
+                <img
+                    src="/static/images/casita%20lumi%20cel.png"
+                    alt="Casita de Lumi"
+                >
+
+            </picture>
+
+
+            <!-- Logo -->
             <div class="lumi-logo">
 
                 <span class="logo-dot"></span>
@@ -72,7 +72,7 @@
 
 
             <!-- =================================================
-                 ESPACIO PARA EL GIF DE LUMI
+                 GIF DE LUMI
             ================================================== -->
 
             <div
@@ -80,14 +80,11 @@
                 class="lumi-avatar"
             >
 
-                <!--
-
-                    AQUÍ NO PONEMOS NADA TODAVÍA.
-
-                    Este espacio está reservado para
-                    tu GIF de Lumi.
-
-                -->
+                <img
+                    id="lumi-avatar-image"
+                    src="/static/images/SALUDO%20LUMI.gif"
+                    alt="Lumi"
+                >
 
             </div>
 
@@ -95,33 +92,39 @@
         </section>
 
 
-        <!-- =================================================
+
+        <!-- =====================================================
              CHAT
-        ================================================== -->
+        ====================================================== -->
 
-        <section class="chat-container">
-
-
-            <!-- MENSAJE INICIAL -->
-
-            <div
-                id="welcome-message"
-                class="lumi-response welcome-message"
-            >
-
-                ¡Hola! Soy Lumi.
-                <br>
-                Pregúntame algo sobre Bogotá.
-
-            </div>
+        <section
+            id="chatContainer"
+            class="chat-container"
+        >
 
 
-            <!-- RESPUESTAS -->
+            <div class="chat-messages">
 
-            <div
-                id="response"
-                class="response-container"
-            >
+
+                <!-- MENSAJE INICIAL -->
+
+                <div
+                    id="welcome-message"
+                    class="lumi-response welcome-message"
+                >
+                    ¡Hola! Soy Lumi.
+                    <br>
+                    Pregúntame algo sobre Bogotá.
+                </div>
+
+
+                <!-- RESPUESTAS -->
+
+                <div
+                    id="response"
+                    class="response-container"
+                ></div>
+
 
             </div>
 
@@ -129,9 +132,10 @@
         </section>
 
 
-        <!-- =================================================
+
+        <!-- =====================================================
              BARRA DE TEXTO
-        ================================================== -->
+        ====================================================== -->
 
         <div class="input-area">
 
@@ -147,13 +151,11 @@
                     type="button"
                     aria-label="Hablar con Lumi"
                 >
-
                     🎙
-
                 </button>
 
 
-                <!-- TEXTO -->
+                <!-- INPUT -->
 
                 <input
                     id="message"
@@ -174,9 +176,7 @@
                 type="button"
                 aria-label="Enviar mensaje"
             >
-
                 ➤
-
             </button>
 
 
@@ -186,33 +186,49 @@
     </main>
 
 
-    <!-- =================================================
+
+    <!-- =========================================================
          MODAL DE IMAGEN
-    ================================================== -->
+    ========================================================== -->
 
     <div
         id="imageModal"
         class="image-modal"
+        aria-hidden="true"
     >
+
 
         <button
             id="closeModal"
             class="close-modal"
             type="button"
+            aria-label="Cerrar imagen"
         >
 
-            ×
+            <img
+                src="/static/images/quitar%20lumi.png"
+                alt="Cerrar"
+            >
 
         </button>
 
 
         <div class="modal-content">
 
-            <img
-                id="modalImage"
-                src=""
-                alt="Lugar"
-            >
+
+            <div class="modal-image-wrapper">
+
+                <div class="modal-loading">
+                    Cargando imagen...
+                </div>
+
+                <img
+                    id="modalImage"
+                    src=""
+                    alt="Lugar recomendado"
+                >
+
+            </div>
 
 
             <div class="modal-info">
@@ -223,17 +239,17 @@
 
             </div>
 
+
         </div>
+
 
     </div>
 
 
-    <!-- =================================================
+
+    <!-- =========================================================
          JAVASCRIPT
-         
-         IMPORTANTE:
-         Flask los sirve mediante /js/
-    ================================================== -->
+    ========================================================== -->
 
     <script
         src="/js/api.js"

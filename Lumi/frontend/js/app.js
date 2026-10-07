@@ -3,56 +3,381 @@
 // APP
 // =====================================================
 
+
+// =====================================================
+// ELEMENTOS
+// =====================================================
+
 const input =
     document.getElementById("message");
+
 
 const button =
     document.getElementById("send");
 
+
 const responseDiv =
     document.getElementById("response");
 
+
 const welcomeMessage =
-    document.getElementById(
-        "welcome-message"
-    );
+    document.getElementById("welcome-message");
+
+
+const chatContainer =
+    document.getElementById("chatContainer");
+
+
+const chatMessages =
+    document.querySelector(".chat-messages");
+
 
 const imageModal =
-    document.getElementById(
-        "imageModal"
-    );
+    document.getElementById("imageModal");
+
 
 const modalImage =
-    document.getElementById(
-        "modalImage"
-    );
+    document.getElementById("modalImage");
+
 
 const modalTitle =
-    document.getElementById(
-        "modalTitle"
-    );
+    document.getElementById("modalTitle");
+
 
 const modalDescription =
-    document.getElementById(
-        "modalDescription"
-    );
+    document.getElementById("modalDescription");
+
+
+const modalLoading =
+    document.querySelector(".modal-loading");
+
+
+const modalImageWrapper =
+    document.querySelector(".modal-image-wrapper");
+
 
 const closeModal =
-    document.getElementById(
-        "closeModal"
-    );
+    document.getElementById("closeModal");
+
+
+const lumiAvatarImage =
+    document.getElementById("lumi-avatar-image");
 
 
 // =====================================================
-// PREGUNTAR
+// RUTAS DE LOS GIF
+// =====================================================
+
+const LUMI_GIFS = {
+
+    saludo:
+        "/static/images/SALUDO%20LUMI.gif",
+
+    hablando:
+        "/static/images/HABLANDO%20LUMI.gif",
+
+    pensando:
+        "/static/images/PENSANDO%20LUMI.gif",
+
+    feliz:
+        "/static/images/FELIZ%20LUMI.gif",
+
+    error:
+        "/static/images/ERROR%20LUMI.gif"
+
+};
+
+
+// =====================================================
+// CAMBIAR ANIMACIÓN DE LUMI
+// =====================================================
+
+function setLumiAnimation(tipo) {
+
+    if (!lumiAvatarImage) {
+        return;
+    }
+
+
+    const nuevaRuta =
+        LUMI_GIFS[tipo] ||
+        LUMI_GIFS.saludo;
+
+
+    if (
+        lumiAvatarImage.src.endsWith(
+            nuevaRuta
+        )
+    ) {
+        return;
+    }
+
+
+    lumiAvatarImage.src =
+        nuevaRuta;
+}
+
+
+// =====================================================
+// SCROLL AUTOMÁTICO
+// =====================================================
+
+function scrollChatToBottom(smooth = true) {
+
+    if (!chatMessages) {
+        return;
+    }
+
+
+    requestAnimationFrame(() => {
+
+        chatMessages.scrollTo({
+
+            top:
+                chatMessages.scrollHeight,
+
+            behavior:
+                smooth
+                    ? "smooth"
+                    : "auto"
+
+        });
+
+    });
+}
+
+
+// =====================================================
+// OBSERVADOR DEL CHAT
+//
+// Si aparece cualquier mensaje nuevo,
+// automáticamente baja al final.
+// =====================================================
+
+if (responseDiv) {
+
+    const chatObserver =
+        new MutationObserver(() => {
+
+            scrollChatToBottom(true);
+
+        });
+
+
+    chatObserver.observe(
+
+        responseDiv,
+
+        {
+            childList: true,
+            subtree: true
+        }
+
+    );
+}
+
+
+// =====================================================
+// LIMPIAR MARKDOWN PARA MOSTRAR EN PANTALLA
+//
+// Se eliminan los símbolos de formato,
+// pero NO los emojis.
+// =====================================================
+
+function cleanDisplayText(text) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    let clean =
+        String(text);
+
+
+    // Negrilla
+    clean =
+        clean.replace(
+            /\*\*(.*?)\*\*/g,
+            "$1"
+        );
+
+
+    // Cursiva
+    clean =
+        clean.replace(
+            /(?<!\*)\*([^*\n]+)\*(?!\*)/g,
+            "$1"
+        );
+
+
+    // Guiones bajos usados para cursiva/negrilla
+    clean =
+        clean.replace(
+            /__([^_]+)__/g,
+            "$1"
+        );
+
+
+    clean =
+        clean.replace(
+            /(?<!_)_([^_\n]+)_(?!_)/g,
+            "$1"
+        );
+
+
+    // Código inline
+    clean =
+        clean.replace(
+            /`([^`]+)`/g,
+            "$1"
+        );
+
+
+    // Encabezados Markdown
+    clean =
+        clean.replace(
+            /^#{1,6}\s*/gm,
+            ""
+        );
+
+
+    // Citas Markdown
+    clean =
+        clean.replace(
+            /^>\s?/gm,
+            ""
+        );
+
+
+    // Separadores
+    clean =
+        clean.replace(
+            /^[-*_]{3,}\s*$/gm,
+            ""
+        );
+
+
+    return clean.trim();
+}
+
+
+// =====================================================
+// LIMPIAR TEXTO PARA SPEECH
+//
+// IMPORTANTE:
+// Los emojis se mantienen en el chat,
+// pero NO se mandan al lector de voz.
+// =====================================================
+
+function cleanTextForSpeech(text) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    let clean =
+        cleanDisplayText(text);
+
+
+    // =================================================
+    // EMOJIS
+    // =================================================
+
+    clean =
+        clean.replace(
+            /[\u{1F000}-\u{1FAFF}]/gu,
+            " "
+        );
+
+
+    clean =
+        clean.replace(
+            /[\u{2600}-\u{27BF}]/gu,
+            " "
+        );
+
+
+    // Variaciones de emoji
+    clean =
+        clean.replace(
+            /[\u{FE0E}\u{FE0F}]/gu,
+            ""
+        );
+
+
+    // Modificadores de tono de piel
+    clean =
+        clean.replace(
+            /[\u{1F3FB}-\u{1F3FF}]/gu,
+            ""
+        );
+
+
+    // Zero width joiner
+    clean =
+        clean.replace(
+            /\u200D/g,
+            ""
+        );
+
+
+    // =================================================
+    // SÍMBOLOS QUE NO TIENE SENTIDO LEER
+    // =================================================
+
+    clean =
+        clean.replace(
+            /[#*_`~^|\\]+/g,
+            " "
+        );
+
+
+    // Viñetas
+    clean =
+        clean.replace(
+            /^[•▪◦●○◆◇■□►▸→←]+\s*/gm,
+            ""
+        );
+
+
+    // Links Markdown
+    clean =
+        clean.replace(
+            /\[([^\]]+)\]\([^)]+\)/g,
+            "$1"
+        );
+
+
+    // URLs
+    clean =
+        clean.replace(
+            /https?:\/\/\S+/gi,
+            " "
+        );
+
+
+    // Múltiples espacios
+    clean =
+        clean.replace(
+            /\s+/g,
+            " "
+        );
+
+
+    return clean.trim();
+}
+
+
+// =====================================================
+// ENVIAR MENSAJE
 // =====================================================
 
 async function askLumi(message) {
 
     if (!message.trim()) {
-
         return;
-
     }
 
 
@@ -62,7 +387,6 @@ async function askLumi(message) {
 
         welcomeMessage.style.display =
             "none";
-
     }
 
 
@@ -74,7 +398,17 @@ async function askLumi(message) {
     input.value = "";
 
 
-    // Mostrar loading
+    // Enviar inmediatamente al último mensaje
+
+    scrollChatToBottom(true);
+
+
+    // Lumi pensando
+
+    setLumiAnimation("pensando");
+
+
+    // Loading
 
     showLoading();
 
@@ -99,21 +433,40 @@ async function askLumi(message) {
         showLumiResponse(data);
 
 
-        // Hablar
+        // Si hay texto para hablar
 
-        if (data.speech) {
+        if (
+            data &&
+            data.speech
+        ) {
 
-            speak(data.speech);
+            speak(
+                data.speech
+            );
 
         }
+        else {
+
+            setLumiAnimation("feliz");
+
+        }
+
 
     }
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Error comunicando con Lumi:",
+            error
+        );
 
 
         hideLoading();
+
+
+        setLumiAnimation(
+            "error"
+        );
 
 
         showLumiResponse({
@@ -125,6 +478,8 @@ async function askLumi(message) {
 
     }
 
+
+    scrollChatToBottom(true);
 }
 
 
@@ -152,16 +507,21 @@ function addUserMessage(message) {
         bubble
     );
 
+
+    scrollChatToBottom(true);
 }
 
 
 // =====================================================
-// RESPUESTA
+// RESPUESTA LUMI
 // =====================================================
 
 function showLumiResponse(data) {
 
-    if (data.speech) {
+    if (
+        data &&
+        data.speech
+    ) {
 
         const bubble =
             document.createElement(
@@ -173,8 +533,13 @@ function showLumiResponse(data) {
             "lumi-response";
 
 
+        // Se limpia SOLO el formato visual.
+        // Los emojis permanecen.
+
         bubble.textContent =
-            data.speech;
+            cleanDisplayText(
+                data.speech
+            );
 
 
         responseDiv.appendChild(
@@ -184,14 +549,19 @@ function showLumiResponse(data) {
     }
 
 
-    // Solo si el backend
-    // realmente manda lugares
+    // =================================================
+    // LUGARES
+    // =================================================
 
     const places =
-        getPlacesFromResponse(data);
+        getPlacesFromResponse(
+            data
+        );
 
 
-    if (places.length > 0) {
+    if (
+        places.length > 0
+    ) {
 
         createPlacesGallery(
             places
@@ -199,14 +569,23 @@ function showLumiResponse(data) {
 
     }
 
+
+    scrollChatToBottom(true);
 }
 
 
 // =====================================================
-// LUGARES
+// OBTENER LUGARES
 // =====================================================
 
 function getPlacesFromResponse(data) {
+
+    if (!data) {
+        return [];
+    }
+
+
+    // Backend ideal
 
     if (
         Array.isArray(
@@ -219,6 +598,8 @@ function getPlacesFromResponse(data) {
     }
 
 
+    // Formato anterior: images[]
+
     if (
         Array.isArray(
             data.images
@@ -227,6 +608,39 @@ function getPlacesFromResponse(data) {
 
         return data.images.map(
             (image, index) => {
+
+                // Si viene como objeto
+
+                if (
+                    typeof image ===
+                    "object" &&
+                    image !== null
+                ) {
+
+                    return {
+
+                        name:
+                            image.name ||
+                            image.title ||
+                            "Lugar " +
+                            (index + 1),
+
+                        image:
+                            image.image ||
+                            image.url ||
+                            image.src,
+
+                        description:
+                            image.description ||
+                            image.descripcion ||
+                            "Descubre este lugar con Lumi."
+
+                    };
+
+                }
+
+
+                // Si viene solamente la URL
 
                 return {
 
@@ -249,7 +663,99 @@ function getPlacesFromResponse(data) {
 
 
     return [];
+}
 
+
+// =====================================================
+// RESOLVER RUTAS DE IMAGEN
+// =====================================================
+
+function resolveImageUrl(image) {
+
+    if (!image) {
+        return "";
+    }
+
+
+    const value =
+        String(image).trim();
+
+
+    if (!value) {
+        return "";
+    }
+
+
+    // URL completa
+
+    if (
+        value.startsWith(
+            "http://"
+        ) ||
+        value.startsWith(
+            "https://"
+        ) ||
+        value.startsWith(
+            "data:"
+        ) ||
+        value.startsWith(
+            "blob:"
+        )
+    ) {
+
+        return value;
+    }
+
+
+    // Ruta absoluta del servidor
+
+    if (
+        value.startsWith("/")
+    ) {
+
+        return value;
+    }
+
+
+    // =================================================
+    // IMÁGENES LOCALES
+    // =================================================
+
+    const nombre =
+        value
+            .split("/")
+            .pop();
+
+
+    // Monserrate de prueba
+
+    if (
+        nombre.toLowerCase() ===
+        "monserrate.jpg"
+    ) {
+
+        return (
+            "/static/images/" +
+            encodeURIComponent(
+                "Monserrate.jpg"
+            )
+        );
+
+    }
+
+
+    // Si el backend manda simplemente:
+    //
+    // "Monserrate.jpg"
+    //
+    // se busca en static/images
+
+    return (
+        "/static/images/" +
+        encodeURIComponent(
+            nombre
+        )
+    );
 }
 
 
@@ -261,6 +767,36 @@ function createPlacesGallery(
     places
 ) {
 
+    if (
+        !places ||
+        places.length === 0
+    ) {
+
+        return;
+    }
+
+
+    const validPlaces =
+        places
+            .filter(
+                place =>
+                    place &&
+                    place.image
+            )
+            .slice(
+                0,
+                4
+            );
+
+
+    if (
+        validPlaces.length === 0
+    ) {
+
+        return;
+    }
+
+
     const gallery =
         document.createElement(
             "div"
@@ -271,103 +807,194 @@ function createPlacesGallery(
         "places-grid";
 
 
-    places
-        .slice(0, 4)
-        .forEach(
-            (place) => {
+    validPlaces.forEach(
+        (place) => {
 
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "place-card";
-
-
-                const image =
-                    document.createElement(
-                        "img"
-                    );
-
-
-                image.src =
-                    place.image;
-
-
-                image.alt =
-                    place.name ||
-                    "Lugar";
-
-
-                const info =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                info.className =
-                    "place-info";
-
-
-                const title =
-                    document.createElement(
-                        "h3"
-                    );
-
-
-                title.textContent =
-                    place.name ||
-                    "Lugar";
-
-
-                const description =
-                    document.createElement(
-                        "p"
-                    );
-
-
-                description.textContent =
-                    place.description ||
-                    "";
-
-
-                info.appendChild(title);
-
-                info.appendChild(description);
-
-                card.appendChild(image);
-
-                card.appendChild(info);
-
-
-                card.addEventListener(
-                    "click",
-                    () => {
-
-                        openImage(
-                            place.image,
-                            place.name ||
-                                "Lugar",
-                            place.description ||
-                                ""
-                        );
-
-                    }
+            const card =
+                document.createElement(
+                    "div"
                 );
 
 
-                gallery.appendChild(card);
+            card.className =
+                "place-card loading";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                resolveImageUrl(
+                    place.image
+                );
+
+
+            image.alt =
+                place.name ||
+                "Lugar recomendado";
+
+
+            image.loading =
+                "lazy";
+
+
+            // =================================================
+            // IMAGEN CARGADA
+            // =================================================
+
+            image.addEventListener(
+                "load",
+                () => {
+
+                    image.classList.add(
+                        "loaded"
+                    );
+
+                    card.classList.remove(
+                        "loading"
+                    );
+
+                }
+            );
+
+
+            // =================================================
+            // ERROR DE IMAGEN
+            // =================================================
+
+            image.addEventListener(
+                "error",
+                () => {
+
+                    card.classList.remove(
+                        "loading"
+                    );
+
+                    card.classList.add(
+                        "image-error"
+                    );
+
+                    image.style.opacity =
+                        "0";
+
+                    console.warn(
+                        "No se pudo cargar la imagen:",
+                        image.src
+                    );
+
+                }
+            );
+
+
+            // =================================================
+            // INFORMACIÓN
+            // =================================================
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "place-info";
+
+
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+
+            title.textContent =
+                cleanDisplayText(
+                    place.name ||
+                    "Lugar"
+                );
+
+
+            const description =
+                document.createElement(
+                    "p"
+                );
+
+
+            description.textContent =
+                cleanDisplayText(
+                    place.description ||
+                    ""
+                );
+
+
+            info.appendChild(
+                title
+            );
+
+
+            if (
+                place.description
+            ) {
+
+                info.appendChild(
+                    description
+                );
 
             }
-        );
+
+
+            card.appendChild(
+                image
+            );
+
+
+            card.appendChild(
+                info
+            );
+
+
+            // =================================================
+            // CLICK
+            // =================================================
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    openImage(
+
+                        resolveImageUrl(
+                            place.image
+                        ),
+
+                        place.name ||
+                            "Lugar",
+
+                        place.description ||
+                            ""
+
+                    );
+
+                }
+            );
+
+
+            gallery.appendChild(
+                card
+            );
+
+        }
+    );
 
 
     responseDiv.appendChild(
         gallery
     );
 
+
+    scrollChatToBottom(true);
 }
 
 
@@ -381,22 +1008,85 @@ function openImage(
     description
 ) {
 
-    modalImage.src =
-        image;
+    if (!image) {
+        return;
+    }
+
+
+    modalImageWrapper.classList.remove(
+        "loaded"
+    );
+
+
+    modalImage.classList.remove(
+        "loaded"
+    );
+
+
+    modalLoading.textContent =
+        "Cargando imagen...";
+
+
+    modalImage.src = "";
+
 
     modalTitle.textContent =
-        title;
+        cleanDisplayText(
+            title
+        );
+
 
     modalDescription.textContent =
-        description;
+        cleanDisplayText(
+            description
+        );
 
 
     imageModal.classList.add(
         "active"
     );
 
+
+    imageModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    // Cargar después de mostrar modal
+
+    modalImage.src =
+        image;
+
+
+    modalImage.onload =
+        () => {
+
+            modalImage.classList.add(
+                "loaded"
+            );
+
+            modalImageWrapper.classList.add(
+                "loaded"
+            );
+
+        };
+
+
+    modalImage.onerror =
+        () => {
+
+            modalLoading.textContent =
+                "No se pudo cargar la imagen.";
+
+        };
+
 }
 
+
+// =====================================================
+// CERRAR MODAL
+// =====================================================
 
 function closeImageModal() {
 
@@ -404,7 +1094,19 @@ function closeImageModal() {
         "active"
     );
 
+
+    imageModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
     modalImage.src = "";
+
+
+    modalImage.classList.remove(
+        "loaded"
+    );
 
 }
 
@@ -433,10 +1135,43 @@ imageModal.addEventListener(
 
 
 // =====================================================
+// ESC PARA CERRAR
+// =====================================================
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            closeImageModal();
+
+        }
+
+    }
+);
+
+
+// =====================================================
 // LOADING
 // =====================================================
 
 function showLoading() {
+
+    // Evitar duplicados
+
+    if (
+        document.getElementById(
+            "lumiLoading"
+        )
+    ) {
+
+        return;
+    }
+
 
     const loading =
         document.createElement(
@@ -452,16 +1187,35 @@ function showLoading() {
         "lumi-response loading-message";
 
 
-    loading.textContent =
-        "Lumi está pensando...";
+    loading.innerHTML = `
+
+        <span>
+            Lumi está pensando
+        </span>
+
+        <span class="loading-dots">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </span>
+
+    `;
 
 
     responseDiv.appendChild(
         loading
     );
 
+
+    scrollChatToBottom(true);
 }
 
+
+// =====================================================
+// OCULTAR LOADING
+// =====================================================
 
 function hideLoading() {
 
@@ -477,6 +1231,8 @@ function hideLoading() {
 
     }
 
+
+    scrollChatToBottom(true);
 }
 
 
@@ -505,7 +1261,8 @@ input.addEventListener(
     (event) => {
 
         if (
-            event.key === "Enter"
+            event.key ===
+            "Enter"
         ) {
 
             event.preventDefault();
@@ -518,4 +1275,18 @@ input.addEventListener(
         }
 
     }
+);
+
+
+// =====================================================
+// INICIALIZAR LUMI
+// =====================================================
+
+setLumiAnimation(
+    "saludo"
+);
+
+
+scrollChatToBottom(
+    false
 );
