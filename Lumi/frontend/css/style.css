@@ -2,13 +2,11 @@
    LUMI
    VARIABLES
 ========================================================= */
-
 :root {
     --lumi-green: #00674F;
     --chat-bg: #EFEFEF;
     --bot-bubble: #CDCDCD;
     --bubble-radius: 18px;
-
     --icon-green: #059F3D;
     --icon-green-dark: #048A35;
     --rec-red: #B71B48;
@@ -16,23 +14,16 @@
     /* Degradado de profundidad (#00140F → transparente) */
     --shade-rgb: 0, 20, 15;
 
-    /* Cuánto se mete el escenario / degradado DETRÁS del chat
-       (así las esquinas redondeadas se ven continuas) */
+    /* Cuánto se mete el escenario / degradado DETRÁS del chat */
     --stage-overlap: 40px;
 
-    --chat-h: 61%;                 /* alto del chat en vertical */
-    --stage-base: var(--stage-overlap); /* en vertical: borde inferior del escenario = borde superior del chat */
-    --stage-cx: 50%;               /* centro horizontal del escenario */
+    --chat-h: 61%;
+    --stage-base: var(--stage-overlap);
+    --stage-cx: 50%;
 
-    /* Degradado de profundidad.
-       --shade-size  : cuánto del degradado se VE (fuera del chat)
-       --shade-cover : qué fracción del degradado queda TAPADA por el chat
-                       (0.7 = 70%). Más cobertura = el degradado empieza
-                       a verse más claro. */
     --shade-size: 16vh;
     --shade-cover: 0.7;
     --shade-dir: to top;
-
     --shade-total: calc(var(--shade-size) / (1 - var(--shade-cover)));
     --shade-hidden: calc(var(--shade-total) * var(--shade-cover));
 }
@@ -40,40 +31,32 @@
 
 /* =========================================================
    >>> INICIO AJUSTES DEL ESCENARIO <<<
-   Todo en % del ANCHO del escenario (misma unidad para árboles,
-   casita y pajarito, así siempre se mantienen proporcionales).
-     -w : ancho
-     -x : desplazamiento horizontal (+ derecha, - izquierda)
-     -y : desplazamiento vertical   (+ sube,    - baja)
-   Con y = 0 el borde inferior toca el borde superior del chat.
-
-   Para editarlo abre la página con ?tune y usa "Copiar CSS":
-   reemplaza TODO lo que hay entre INICIO y FIN (inclusive).
 ========================================================= */
-
-/* >>> INICIO AJUSTES DEL ESCENARIO <<< */
 
 :root {
     --trees-w: 117;
     --trees-x: 0;
     --trees-y: -5.5;
+
     --house-w: 56;
     --house-x: 0;
     --house-y: -35.5;
+
     --bird-w: 36.25;
     --bird-x: 0;
     --bird-y: 5.75;
 }
-
 
 @media (min-width: 900px) {
     :root {
         --trees-w: 151;
         --trees-x: 0;
         --trees-y: -5.5;
+
         --house-w: 79;
         --house-x: 0;
         --house-y: -16;
+
         --bird-w: 57.5;
         --bird-x: 0;
         --bird-y: 42.75;
@@ -95,10 +78,8 @@ html,
 body {
     margin: 0;
     padding: 0;
-
     width: 100%;
     height: 100%;
-
     overflow: hidden;
 }
 
@@ -114,38 +95,30 @@ body {
 
 .lumi-app {
     position: relative;
-
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-
     overflow: hidden;
-
     background: var(--lumi-green);
 }
 
 
 /* =========================================================
-   ESCENARIO (casita, pajarito, árboles)
-   Es un "contenedor": las unidades cqw de los hijos
-   se calculan respecto a este recuadro.
+   ESCENARIO
 ========================================================= */
 
 .lumi-header {
     position: absolute;
     z-index: 1;
-
     top: 0;
     left: 0;
-
     width: 100%;
     height: calc(100% - var(--chat-h) + var(--stage-overlap));
-
     overflow: hidden;
     background: var(--lumi-green);
-
     container-type: size;
 }
+
 
 /* Capa 1: árboles */
 
@@ -153,10 +126,20 @@ body {
     position: absolute;
     z-index: 2;
 
-    left: calc(var(--stage-cx) + var(--trees-x) * 1cqw);
-    bottom: calc(var(--stage-base) + var(--trees-y) * 1cqw);
+    left: calc(
+        var(--stage-cx) +
+        var(--trees-x) * 1cqw
+    );
 
-    width: calc(var(--trees-w) * 1cqw);
+    bottom: calc(
+        var(--stage-base) +
+        var(--trees-y) * 1cqw
+    );
+
+    width: calc(
+        var(--trees-w) * 1cqw
+    );
+
     height: auto;
 
     transform: translateX(-50%);
@@ -165,16 +148,26 @@ body {
     user-select: none;
 }
 
-/* Capa 2: pajarito (DETRÁS de la casita) */
+
+/* Capa 2: pajarito */
 
 .lumi-avatar {
     position: absolute;
     z-index: 3;
 
-    left: calc(var(--stage-cx) + var(--bird-x) * 1cqw);
-    bottom: calc(var(--stage-base) + var(--bird-y) * 1cqw);
+    left: calc(
+        var(--stage-cx) +
+        var(--bird-x) * 1cqw
+    );
 
-    width: calc(var(--bird-w) * 1cqw);
+    bottom: calc(
+        var(--stage-base) +
+        var(--bird-y) * 1cqw
+    );
+
+    width: calc(
+        var(--bird-w) * 1cqw
+    );
 
     transform: translateX(-50%);
 
@@ -183,23 +176,31 @@ body {
 
 .lumi-avatar img {
     display: block;
-
     width: 100%;
     height: auto;
-
     user-select: none;
 }
 
-/* Capa 3: casita (tiene el hueco por donde se ve el pajarito) */
+
+/* Capa 3: casita */
 
 .lumi-house {
     position: absolute;
     z-index: 5;
 
-    left: calc(var(--stage-cx) + var(--house-x) * 1cqw);
-    bottom: calc(var(--stage-base) + var(--house-y) * 1cqw);
+    left: calc(
+        var(--stage-cx) +
+        var(--house-x) * 1cqw
+    );
 
-    width: calc(var(--house-w) * 1cqw);
+    bottom: calc(
+        var(--stage-base) +
+        var(--house-y) * 1cqw
+    );
+
+    width: calc(
+        var(--house-w) * 1cqw
+    );
 
     transform: translateX(-50%);
 
@@ -208,17 +209,14 @@ body {
 
 .lumi-house img {
     display: block;
-
     width: 100%;
     height: auto;
-
     user-select: none;
 }
 
 
 /* =========================================================
    DEGRADADO DE PROFUNDIDAD
-   Opaco detrás del chat, se desvanece hacia el escenario.
 ========================================================= */
 
 .lumi-shade {
@@ -227,7 +225,11 @@ body {
 
     left: 0;
     right: 0;
-    bottom: calc(var(--chat-h) - var(--shade-hidden));
+
+    bottom: calc(
+        var(--chat-h) -
+        var(--shade-hidden)
+    );
 
     height: var(--shade-total);
 
@@ -270,10 +272,12 @@ body {
     flex-direction: column;
 }
 
-/* Área con scroll: ocupa exactamente el espacio disponible */
+
+/* Área con scroll */
 
 .chat-messages {
     flex: 1 1 auto;
+
     min-height: 0;
 
     width: 100%;
@@ -304,8 +308,7 @@ body {
 
 
 /* =========================================================
-   BURBUJA DE LUMI (izquierda)
-   Esquina inferior izquierda cuadrada
+   BURBUJA DE LUMI
 ========================================================= */
 
 .lumi-response {
@@ -319,7 +322,11 @@ body {
     background: var(--bot-bubble);
     color: #2b2b2b;
 
-    border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 0;
+    border-radius:
+        var(--bubble-radius)
+        var(--bubble-radius)
+        var(--bubble-radius)
+        0;
 
     font-size: 13px;
     line-height: 1.4;
@@ -330,9 +337,29 @@ body {
     overflow-wrap: anywhere;
 }
 
+
+/* =========================================================
+   MENSAJE INICIAL
+   CORRECCIÓN DEL ESPACIADO
+========================================================= */
+
 .welcome-message {
     width: fit-content;
     max-width: 85%;
+
+    /*
+     * IMPORTANTE:
+     * El mensaje inicial no necesita conservar
+     * los espacios/saltos de línea del HTML.
+     *
+     * Esto evita que los saltos e indentación del
+     * código HTML generen espacios verticales enormes.
+     */
+    white-space: normal;
+
+    margin-bottom: 5px;
+
+    line-height: 1.35;
 }
 
 
@@ -343,15 +370,15 @@ body {
 .response-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+
+    gap: 6px;
 
     width: 100%;
 }
 
 
 /* =========================================================
-   BURBUJA DEL USUARIO (derecha)
-   Esquina inferior derecha cuadrada
+   BURBUJA DEL USUARIO
 ========================================================= */
 
 .user-message {
@@ -364,7 +391,11 @@ body {
     color: white;
     background: var(--lumi-green);
 
-    border-radius: var(--bubble-radius) var(--bubble-radius) 0 var(--bubble-radius);
+    border-radius:
+        var(--bubble-radius)
+        var(--bubble-radius)
+        0
+        var(--bubble-radius);
 
     font-size: 13px;
     line-height: 1.4;
@@ -379,27 +410,49 @@ body {
 ========================================================= */
 
 .loading-message {
+    width: fit-content;
+    max-width: 85%;
+
+    padding: 7px 11px;
+
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.2;
+
     opacity: 1;
+
     font-style: normal;
 
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+
+    gap: 7px;
+}
+
+.loading-text {
+    white-space: nowrap;
 }
 
 .loading-dots {
     display: inline-flex;
-    gap: 4px;
+    align-items: center;
+    gap: 3px;
 }
 
 .loading-dots span {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
 
     background: #008f68;
+
     border-radius: 50%;
 
-    animation: loadingDot 1.2s infinite ease-in-out;
+    animation:
+        loadingDot
+        1.2s
+        infinite
+        ease-in-out;
 }
 
 .loading-dots span:nth-child(2) {
@@ -411,7 +464,6 @@ body {
 }
 
 @keyframes loadingDot {
-
     0%,
     80%,
     100% {
@@ -435,26 +487,39 @@ body {
 
     display: grid;
 
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.7fr);
-    grid-template-rows: 100px 100px;
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(0, 0.7fr);
+
+    grid-template-rows:
+        100px
+        100px;
 
     gap: 10px;
+
     margin-bottom: 10px;
 }
 
 .place-card {
     position: relative;
+
     overflow: hidden;
 
     border-radius: 8px;
+
     background: #dddddd;
 
     cursor: pointer;
+
     min-height: 90px;
 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.08);
 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .place-card:first-child {
@@ -463,7 +528,10 @@ body {
 
 .place-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+    box-shadow:
+        0 5px 15px
+        rgba(0, 0, 0, 0.15);
 }
 
 .place-card img {
@@ -471,10 +539,13 @@ body {
     height: 100%;
 
     object-fit: cover;
+
     display: block;
 
     opacity: 0;
-    transition: opacity 0.3s ease;
+
+    transition:
+        opacity 0.3s ease;
 }
 
 .place-card img.loaded {
@@ -485,6 +556,7 @@ body {
     content: "";
 
     position: absolute;
+
     z-index: 3;
 
     width: 25px;
@@ -496,11 +568,19 @@ body {
     margin-left: -12.5px;
     margin-top: -12.5px;
 
-    border: 3px solid rgba(0, 120, 90, 0.2);
+    border:
+        3px solid
+        rgba(0, 120, 90, 0.2);
+
     border-top-color: #008f68;
+
     border-radius: 50%;
 
-    animation: imageSpinner 0.8s linear infinite;
+    animation:
+        imageSpinner
+        0.8s
+        linear
+        infinite;
 }
 
 @keyframes imageSpinner {
@@ -520,13 +600,18 @@ body {
 
     height: 55%;
 
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0, 0, 0, 0.75)
+        );
 
     pointer-events: none;
 }
 
 .place-info {
     position: absolute;
+
     z-index: 4;
 
     bottom: 8px;
@@ -538,16 +623,17 @@ body {
 
 .place-info h3 {
     margin: 0;
+
     font-size: 12px;
     line-height: 1.2;
 }
 
 .place-info p {
     margin: 3px 0 0;
+
     font-size: 9px;
     line-height: 1.2;
 }
-
 
 
 /* =========================================================
@@ -556,31 +642,45 @@ body {
 
 .input-area {
     position: absolute;
+
     z-index: 100;
 
     left: 20px;
     right: 20px;
+
     bottom: 18px;
 
     display: flex;
     align-items: center;
+
     gap: 8px;
 }
 
-/* Marco con degradado vertical #8ABFE0 → #059F3D */
+
+/* Marco con degradado */
 
 .input-wrapper {
     flex: 1;
 
     height: 48px;
+
     min-width: 0;
 
     border: 4px solid transparent;
+
     border-radius: 12px;
 
     background:
-        linear-gradient(var(--chat-bg), var(--chat-bg)) padding-box,
-        linear-gradient(to bottom, #8ABFE0, #059F3D) border-box;
+        linear-gradient(
+            var(--chat-bg),
+            var(--chat-bg)
+        ) padding-box,
+
+        linear-gradient(
+            to bottom,
+            #8ABFE0,
+            #059F3D
+        ) border-box;
 
     display: flex;
     align-items: center;
@@ -590,7 +690,9 @@ body {
 
 #message {
     flex: 1;
+
     min-width: 0;
+
     height: 100%;
 
     border: none;
@@ -601,6 +703,7 @@ body {
     padding: 0 6px;
 
     font-family: Arial, sans-serif;
+
     font-size: 12px;
 }
 
@@ -609,7 +712,9 @@ body {
 }
 
 
-/* Micrófono */
+/* =========================================================
+   MICRÓFONO
+========================================================= */
 
 .mic-button {
     width: 38px;
@@ -618,9 +723,11 @@ body {
     flex-shrink: 0;
 
     border: none;
+
     background: transparent;
 
     color: var(--icon-green);
+
     cursor: pointer;
 
     padding: 0;
@@ -629,11 +736,14 @@ body {
     align-items: center;
     justify-content: center;
 
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
 }
 
 .mic-button:hover {
     transform: scale(1.05);
+
     color: var(--icon-green-dark);
 }
 
@@ -644,10 +754,12 @@ body {
 .mic-icon {
     width: 22px;
     height: 24px;
+
     display: block;
 }
 
-/* Grabando: círculo plano que late */
+
+/* Grabando */
 
 .rec-dot {
     display: none;
@@ -656,6 +768,7 @@ body {
     height: 20px;
 
     border-radius: 50%;
+
     background: var(--rec-red);
 }
 
@@ -665,11 +778,15 @@ body {
 
 .mic-button.recording .rec-dot {
     display: block;
-    animation: recPulse 1s ease-in-out infinite;
+
+    animation:
+        recPulse
+        1s
+        ease-in-out
+        infinite;
 }
 
 @keyframes recPulse {
-
     0%,
     100% {
         transform: scale(0.82);
@@ -681,7 +798,9 @@ body {
 }
 
 
-/* Botón enviar */
+/* =========================================================
+   BOTÓN ENVIAR
+========================================================= */
 
 .send-button {
     width: 48px;
@@ -690,6 +809,7 @@ body {
     flex-shrink: 0;
 
     border: none;
+
     border-radius: 50%;
 
     background: var(--icon-green);
@@ -702,18 +822,23 @@ body {
 
     padding: 0;
 
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
 .send-button svg {
     width: 24px;
     height: 24px;
+
     display: block;
+
     margin-left: 2px;
 }
 
 .send-button:hover {
     transform: scale(1.05);
+
     background: var(--icon-green-dark);
 }
 
@@ -722,58 +847,77 @@ body {
 }
 
 
-
 /* =========================================================
    LLAMADA A LA ACCIÓN
-   - Micrófono: salta y se tambalea mientras el campo está vacío
-   - Enviar:    salta y se tambalea cuando ya hay texto
-   (solo con la interfaz en reposo, sin respuesta en curso)
-   No usa JS: depende de :placeholder-shown y :has().
 ========================================================= */
 
 @keyframes ctaWiggle {
-
     0%,
     48%,
     100% {
-        transform: translateY(0) rotate(0deg);
+        transform:
+            translateY(0)
+            rotate(0deg);
     }
 
     8% {
-        transform: translateY(-6px) rotate(-9deg);
+        transform:
+            translateY(-6px)
+            rotate(-9deg);
     }
 
     16% {
-        transform: translateY(0) rotate(7deg);
+        transform:
+            translateY(0)
+            rotate(7deg);
     }
 
     24% {
-        transform: translateY(-3px) rotate(-5deg);
+        transform:
+            translateY(-3px)
+            rotate(-5deg);
     }
 
     32% {
-        transform: translateY(0) rotate(3deg);
+        transform:
+            translateY(0)
+            rotate(3deg);
     }
 
     40% {
-        transform: translateY(0) rotate(-1.5deg);
+        transform:
+            translateY(0)
+            rotate(-1.5deg);
     }
 }
 
-body:not(.is-busy) .input-area:has(#message:placeholder-shown) .mic-button:not(.recording) .mic-icon {
-    animation: ctaWiggle 2.6s ease-in-out infinite;
+body:not(.is-busy)
+.input-area:has(#message:placeholder-shown)
+.mic-button:not(.recording)
+.mic-icon {
+    animation:
+        ctaWiggle
+        2.6s
+        ease-in-out
+        infinite;
+
     transform-origin: 50% 80%;
 }
 
-body:not(.is-busy) .input-area:has(#message:not(:placeholder-shown)) .send-button {
-    animation: ctaWiggle 2.6s ease-in-out infinite;
+body:not(.is-busy)
+.input-area:has(#message:not(:placeholder-shown))
+.send-button {
+    animation:
+        ctaWiggle
+        2.6s
+        ease-in-out
+        infinite;
 }
-
-/* Con el cursor encima se detiene para que se vea el hover */
 
 body .input-area .send-button:hover {
     animation: none;
 }
+
 
 /* =========================================================
    MODAL
@@ -781,16 +925,20 @@ body .input-area .send-button:hover {
 
 .image-modal {
     position: fixed;
+
     z-index: 1000;
+
     inset: 0;
 
     display: none;
+
     justify-content: center;
     align-items: center;
 
     padding: 20px;
 
-    background: rgba(0, 45, 40, 0.92);
+    background:
+        rgba(0, 45, 40, 0.92);
 }
 
 .image-modal.active {
@@ -801,20 +949,25 @@ body .input-area .send-button:hover {
     position: relative;
 
     width: min(500px, 100%);
+
     max-height: 90vh;
 
     background: #eeeeee;
 
     border-radius: 20px;
+
     overflow: hidden;
 
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.35);
 }
 
 .modal-image-wrapper {
     position: relative;
 
     width: 100%;
+
     min-height: 180px;
 
     background: #dddddd;
@@ -822,15 +975,19 @@ body .input-area .send-button:hover {
 
 .modal-content img {
     width: 100%;
+
     max-height: 60vh;
 
     object-fit: cover;
+
     display: block;
 }
 
 .modal-image-wrapper > img {
     opacity: 0;
-    transition: opacity 0.3s ease;
+
+    transition:
+        opacity 0.3s ease;
 }
 
 .modal-image-wrapper > img.loaded {
@@ -839,14 +996,18 @@ body .input-area .send-button:hover {
 
 .modal-loading {
     position: absolute;
+
     z-index: 2;
+
     inset: 0;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     color: #777;
+
     font-size: 13px;
 }
 
@@ -862,6 +1023,7 @@ body .input-area .send-button:hover {
     margin: 0 0 7px;
 
     color: var(--lumi-green);
+
     font-size: 22px;
 }
 
@@ -869,6 +1031,7 @@ body .input-area .send-button:hover {
     margin: 0;
 
     color: #555;
+
     line-height: 1.45;
 }
 
@@ -877,6 +1040,7 @@ body .input-area .send-button:hover {
 
 .close-modal {
     position: fixed;
+
     z-index: 1002;
 
     top: 20px;
@@ -886,18 +1050,22 @@ body .input-area .send-button:hover {
     height: 43px;
 
     border: none;
+
     border-radius: 50%;
 
     background: #00a35f;
+
     cursor: pointer;
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 
     padding: 8px;
 
-    transition: transform 0.2s ease;
+    transition:
+        transform 0.2s ease;
 }
 
 .close-modal:hover {
@@ -907,6 +1075,7 @@ body .input-area .send-button:hover {
 .close-modal img {
     width: 100%;
     height: 100%;
+
     object-fit: contain;
 }
 
@@ -918,45 +1087,64 @@ body .input-area .send-button:hover {
 @media (min-width: 900px) {
 
     :root {
-        --stage-w: 36vw;            /* ancho visible del escenario */
-        --stage-base: 0px;          /* en horizontal el escenario llega al borde inferior */
-        --stage-cx: calc(var(--stage-w) / 2);
+        --stage-w: 36vw;
+
+        --stage-base: 0px;
+
+        --stage-cx:
+            calc(var(--stage-w) / 2);
 
         --shade-size: 12vw;
+
         --shade-dir: to left;
     }
 
-    /* El escenario se extiende por detrás del chat */
-
     .lumi-header {
-        width: calc(var(--stage-w) + var(--stage-overlap));
+        width:
+            calc(
+                var(--stage-w) +
+                var(--stage-overlap)
+            );
+
         height: 100%;
     }
 
     .lumi-shade {
         top: 0;
+
         bottom: auto;
+
         right: auto;
 
-        left: calc(var(--stage-w) - var(--shade-size));
+        left:
+            calc(
+                var(--stage-w) -
+                var(--shade-size)
+            );
 
         width: var(--shade-total);
+
         height: 100%;
     }
 
-    /* Chat derecho: solo esquinas IZQUIERDAS redondeadas */
-
     .chat-container {
         left: var(--stage-w);
+
         right: 0;
+
         top: 0;
         bottom: 0;
 
         height: 100%;
 
-        border-radius: 28px 0 0 28px;
+        border-radius:
+            28px 0 0 28px;
 
-        padding: 28px 28px 94px 28px;
+        padding:
+            28px
+            28px
+            94px
+            28px;
     }
 
     .chat-messages {
@@ -964,8 +1152,14 @@ body .input-area .send-button:hover {
     }
 
     .input-area {
-        left: calc(var(--stage-w) + 28px);
+        left:
+            calc(
+                var(--stage-w) +
+                28px
+            );
+
         right: 28px;
+
         bottom: 20px;
     }
 
@@ -974,7 +1168,9 @@ body .input-area .send-button:hover {
     }
 
     .places-grid {
-        grid-template-rows: 125px 125px;
+        grid-template-rows:
+            125px
+            125px;
     }
 }
 
@@ -986,17 +1182,25 @@ body .input-area .send-button:hover {
 @media (max-width: 360px) {
 
     .chat-container {
-        padding: 18px 15px 86px 15px;
+        padding:
+            18px
+            15px
+            86px
+            15px;
     }
 
     .input-area {
         left: 14px;
         right: 14px;
+
         bottom: 14px;
     }
 
     .places-grid {
-        grid-template-rows: 85px 85px;
+        grid-template-rows:
+            85px
+            85px;
+
         gap: 7px;
     }
 
@@ -1014,10 +1218,11 @@ body .input-area .send-button:hover {
    MÓVILES ALTOS
 ========================================================= */
 
-@media (min-height: 750px) and (max-width: 899px) {
+@media (min-height: 750px)
+and (max-width: 899px) {
 
     :root {
-        --chat-h: 64%;
+        --chat-h: 66%;
     }
 }
 
@@ -1028,7 +1233,10 @@ body .input-area .send-button:hover {
 
 button:focus-visible,
 input:focus-visible {
-    outline: 3px solid rgba(5, 159, 61, 0.35);
+    outline:
+        3px solid
+        rgba(5, 159, 61, 0.35);
+
     outline-offset: 2px;
 }
 
@@ -1044,140 +1252,205 @@ input:focus-visible {
     }
 }
 
+
 /* =========================================================
    GALERÍA DE FOTOS DEL LUGAR — MINIATURA
 ========================================================= */
 
-/* El padding deja espacio para que el hover (scale) no se recorte */
 .photo-gallery {
     width: 100%;
-    padding: 8px 10px 14px;
+
+    padding: 4px 0 8px;
+
+    margin: 0;
 }
 
 .photo-stack {
     position: relative;
+
     width: 100%;
-    aspect-ratio: 16 / 10;
+
+    aspect-ratio: 16 / 9;
+
+    max-height: 220px;
 
     border-radius: 12px;
+
     overflow: hidden;
+
     background: #d9d9d9;
 
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.12);
+
     -webkit-tap-highlight-color: transparent;
 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .photo-stack img {
     position: absolute;
+
     inset: 0;
+
     width: 100%;
     height: 100%;
 
     object-fit: cover;
+
     display: block;
+
     user-select: none;
 
     opacity: 0;
+
     z-index: 0;
-    transition: opacity 0.9s ease-in-out;   /* = FADE_MS en gallery.js */
+
+    transition:
+        opacity 0.9s ease-in-out;
 }
 
 .photo-stack img.active {
     opacity: 1;
-    z-index: 2;            /* la nueva aparece ENCIMA de la anterior */
+
+    z-index: 2;
 }
 
 .photo-stack img.prev {
     opacity: 1;
-    z-index: 1;            /* la anterior se queda debajo hasta terminar el fundido */
+
+    z-index: 1;
+
     transition: none;
 }
 
-/* Hover: igual que los botones */
 .photo-stack:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+
+    box-shadow:
+        0 6px 18px
+        rgba(0, 0, 0, 0.2);
 }
 
-/* Shake de llamada a la acción (versión suave de ctaWiggle) */
+
+/* Shake */
+
 @keyframes photoWiggle {
 
     0%,
     48%,
     100% {
-        transform: translateY(0) rotate(0deg);
+        transform:
+            translateY(0)
+            rotate(0deg);
     }
 
     8% {
-        transform: translateY(-4px) rotate(-0.8deg);
+        transform:
+            translateY(-4px)
+            rotate(-0.8deg);
     }
 
     16% {
-        transform: translateY(0) rotate(0.6deg);
+        transform:
+            translateY(0)
+            rotate(0.6deg);
     }
 
     24% {
-        transform: translateY(-2px) rotate(-0.4deg);
+        transform:
+            translateY(-2px)
+            rotate(-0.4deg);
     }
 
     32% {
-        transform: translateY(0) rotate(0.25deg);
+        transform:
+            translateY(0)
+            rotate(0.25deg);
     }
 
     40% {
-        transform: translateY(0) rotate(-0.1deg);
+        transform:
+            translateY(0)
+            rotate(-0.1deg);
     }
 }
 
-body:not(.is-busy) .photo-stack.cta {
-    animation: photoWiggle 2.6s ease-in-out infinite;
+body:not(.is-busy)
+.photo-stack.cta {
+    animation:
+        photoWiggle
+        2.6s
+        ease-in-out
+        infinite;
 }
 
-/* Con el cursor encima se detiene para que se vea el hover */
 body .photo-stack.cta:hover {
     animation: none;
 }
 
 @media (min-width: 900px) {
+
     .photo-gallery {
-        padding: 12px 24px 18px;
+        padding:
+            12px
+            24px
+            18px;
     }
 
     .photo-stack {
-        aspect-ratio: 3 / 1;      /* proporción del mockup de escritorio */
+        aspect-ratio: 3 / 1;
     }
 }
 
 
 /* =========================================================
-   VISOR AMPLIADO (carrusel)
+   VISOR AMPLIADO
 ========================================================= */
 
 .gv {
-    /* móvil */
     --card-h: 62vh;
     --card-w: 74vw;
-    --s: 0.92;                 /* escala de las fotos laterales */
-    --gap: 3vw;                /* separación entre foto central y laterales */
-    --step: calc(var(--card-w) * (0.5 + var(--s) / 2) + var(--gap));
+
+    --s: 0.92;
+
+    --gap: 3vw;
+
+    --step:
+        calc(
+            var(--card-w) *
+            (0.5 + var(--s) / 2) +
+            var(--gap)
+        );
 
     position: fixed;
+
     inset: 0;
+
     z-index: 2000;
 
-    background: rgba(0, 20, 28, 0.55);   /* oscurece la pantalla principal */
+    background:
+        rgba(0, 20, 28, 0.55);
+
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
 
     opacity: 0;
+
     visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0s linear 0.25s;
 }
 
 @supports (height: 100dvh) {
+
     .gv {
         --card-h: 62dvh;
     }
@@ -1185,23 +1458,30 @@ body .photo-stack.cta:hover {
 
 .gv.open {
     opacity: 1;
+
     visibility: visible;
-    transition: opacity 0.25s ease;
+
+    transition:
+        opacity 0.25s ease;
 }
 
 .gv-stage {
     position: absolute;
+
     inset: 0;
+
     overflow: hidden;
+
     touch-action: pan-y;
 }
 
 .gv-slide {
-    --d: 0;                    /* distancia a la foto actual (la pone el JS) */
+    --d: 0;
     --sc: 1;
-    --k: 1;                    /* multiplicador del hover */
+    --k: 1;
 
     position: absolute;
+
     left: 50%;
     top: 50%;
 
@@ -1209,103 +1489,175 @@ body .photo-stack.cta:hover {
     height: var(--card-h);
 
     border-radius: 16px;
+
     overflow: hidden;
+
     background: #d9d9d9;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+    box-shadow:
+        0 12px 40px
+        rgba(0, 0, 0, 0.35);
 
     transform:
         translate(-50%, -50%)
-        translateX(calc(var(--d) * var(--step)))
-        scale(calc(var(--sc) * var(--k)));
+        translateX(
+            calc(
+                var(--d) *
+                var(--step)
+            )
+        )
+        scale(
+            calc(
+                var(--sc) *
+                var(--k)
+            )
+        );
 
-    transition: transform 0.4s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.3s ease;
+    transition:
+        transform 0.4s
+        cubic-bezier(
+            0.3,
+            0.7,
+            0.2,
+            1
+        ),
+        opacity 0.3s ease;
 }
 
 .gv-slide img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
+
     display: block;
+
     user-select: none;
+
     -webkit-user-drag: none;
 }
 
 .gv-slide[data-pos="center"] {
     --sc: 1;
+
     z-index: 3;
 }
 
 .gv-slide[data-pos="side"] {
     --sc: var(--s);
+
     z-index: 2;
+
     cursor: pointer;
 }
 
 .gv-slide[data-pos="far"] {
     --sc: var(--s);
+
     z-index: 1;
+
     opacity: 0;
+
     pointer-events: none;
 }
 
-/* Hover de las fotos laterales: igual que los botones */
 .gv-slide[data-pos="side"]:hover {
     --k: 1.05;
 }
 
-/* Puntos indicadores */
+
+/* Puntos */
+
 .gv-dots {
     position: absolute;
+
     z-index: 5;
+
     left: 0;
     right: 0;
-    top: calc(50% + var(--card-h) / 2 + 18px);
+
+    top:
+        calc(
+            50% +
+            var(--card-h) / 2 +
+            18px
+        );
 
     display: flex;
+
     justify-content: center;
+
     gap: 14px;
 }
 
 .gv-dot {
     width: 11px;
     height: 11px;
+
     padding: 0;
 
     border: none;
+
     border-radius: 50%;
+
     background: #ffffff;
+
     cursor: pointer;
 
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
 .gv-dot.active {
     background: #00140F;
-    transform: scale(1.15);
+
+    transform:
+        scale(1.15);
 }
 
+
 /* Botón cerrar */
+
 .gv-close {
     position: absolute;
+
     z-index: 6;
 
-    left: calc(50% - var(--card-w) / 2 - 15px);
-    top: calc(50% - var(--card-h) / 2 - 58px);
+    left:
+        calc(
+            50% -
+            var(--card-w) / 2 -
+            15px
+        );
+
+    top:
+        calc(
+            50% -
+            var(--card-h) / 2 -
+            58px
+        );
 
     width: 43px;
     height: 43px;
+
     padding: 8px;
 
     border: none;
+
     border-radius: 50%;
+
     background: #00a35f;
+
     cursor: pointer;
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 
-    transition: transform 0.2s ease;
+    transition:
+        transform 0.2s ease;
 }
 
 .gv-close:hover {
@@ -1315,23 +1667,47 @@ body .photo-stack.cta:hover {
 .gv-close img {
     width: 100%;
     height: 100%;
+
     object-fit: contain;
 }
 
-/* ---------- Escritorio ---------- */
+
+/* =========================================================
+   ESCRITORIO
+========================================================= */
 
 @media (min-width: 900px) {
 
     .gv {
         --card-h: 80vh;
-        --card-w: min(46vw, calc(var(--card-h) * 0.91));
+
+        --card-w:
+            min(
+                46vw,
+                calc(
+                    var(--card-h) *
+                    0.91
+                )
+            );
+
         --s: 0.67;
+
         --gap: 22px;
     }
 
     .gv-close {
-        left: calc(50% - var(--card-w) / 2 - 64px);
-        top: calc(50% - var(--card-h) / 2);
+        left:
+            calc(
+                50% -
+                var(--card-w) / 2 -
+                64px
+            );
+
+        top:
+            calc(
+                50% -
+                var(--card-h) / 2
+            );
     }
 }
 
@@ -1344,4 +1720,228 @@ body .photo-stack.cta:hover {
     .gv-slide {
         transition: none;
     }
+}
+
+
+/* =========================================================
+   AJUSTES FINALES DE LUMI
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   RESPUESTAS MÁS COMPACTAS
+--------------------------------------------------------- */
+
+.response-container {
+    gap: 6px;
+}
+
+.lumi-response {
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+
+
+/* ---------------------------------------------------------
+   MENSAJE INICIAL — CORRECCIÓN DEFINITIVA
+--------------------------------------------------------- */
+
+.welcome-message {
+    /*
+     * NO conservar los saltos/espacios del HTML.
+     * El <br> seguirá funcionando normalmente.
+     */
+    white-space: normal;
+
+    margin-bottom: 5px;
+
+    line-height: 1.35;
+}
+
+
+/* ---------------------------------------------------------
+   LUMI ESTÁ PENSANDO
+--------------------------------------------------------- */
+
+.loading-message {
+    width: fit-content;
+
+    max-width: 85%;
+
+    padding: 7px 11px;
+
+    margin: 0;
+
+    font-size: 12px;
+
+    line-height: 1.2;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.loading-text {
+    white-space: nowrap;
+}
+
+.loading-dots {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 3px;
+}
+
+.loading-dots span {
+    width: 5px;
+    height: 5px;
+}
+
+
+/* ---------------------------------------------------------
+   GALERÍA
+--------------------------------------------------------- */
+
+.photo-gallery {
+    width: 100%;
+
+    padding: 4px 0 8px;
+
+    margin: 0;
+}
+
+.photo-stack {
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    max-height: 220px;
+
+    border-radius: 12px;
+}
+
+@media (hover: none) {
+
+    .photo-stack:hover {
+        transform: none;
+
+        box-shadow:
+            0 2px 8px
+            rgba(0, 0, 0, 0.12);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   CELULARES
+--------------------------------------------------------- */
+
+@media (max-width: 899px) {
+
+    .chat-messages {
+        padding-right: 2px;
+
+        overscroll-behavior-y: contain;
+
+        -webkit-overflow-scrolling: touch;
+
+        scroll-padding-top: 8px;
+
+        scroll-padding-bottom: 8px;
+    }
+
+    .photo-gallery {
+        padding:
+            3px
+            0
+            8px;
+    }
+
+    .photo-stack {
+        max-height: 210px;
+    }
+
+    .lumi-response {
+        max-width: 94%;
+    }
+
+    .response-container {
+        gap: 5px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   CELULARES PEQUEÑOS
+--------------------------------------------------------- */
+
+@media (max-width: 360px) {
+
+    .photo-stack {
+        max-height: 175px;
+    }
+
+    .photo-gallery {
+        padding-bottom: 6px;
+    }
+
+    .lumi-response {
+        font-size: 12px;
+
+        padding:
+            9px
+            12px;
+    }
+
+    .loading-message {
+        font-size: 11px;
+
+        padding:
+            6px
+            9px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   CELULARES ALTOS
+--------------------------------------------------------- */
+
+@media (min-height: 750px)
+and (max-width: 899px) {
+
+    :root {
+
+        --chat-h: 66%;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   EVITAR SALTOS RAROS DEL CONTENIDO
+--------------------------------------------------------- */
+
+.chat-messages,
+.response-container {
+    min-width: 0;
+}
+
+.photo-gallery[hidden] {
+    display: none;
+}
+
+
+/* ---------------------------------------------------------
+   CUANDO LUMI ESTÁ OCUPADA
+--------------------------------------------------------- */
+
+body.is-busy .send-button {
+    animation: none !important;
+}
+
+body.is-busy .mic-button .mic-icon {
+    animation: none !important;
 }
