@@ -1043,3 +1043,305 @@ input:focus-visible {
         animation: none;
     }
 }
+
+/* =========================================================
+   GALERÍA DE FOTOS DEL LUGAR — MINIATURA
+========================================================= */
+
+/* El padding deja espacio para que el hover (scale) no se recorte */
+.photo-gallery {
+    width: 100%;
+    padding: 8px 10px 14px;
+}
+
+.photo-stack {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+
+    border-radius: 12px;
+    overflow: hidden;
+    background: #d9d9d9;
+
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    -webkit-tap-highlight-color: transparent;
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.photo-stack img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+    user-select: none;
+
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 0.9s ease-in-out;   /* = FADE_MS en gallery.js */
+}
+
+.photo-stack img.active {
+    opacity: 1;
+    z-index: 2;            /* la nueva aparece ENCIMA de la anterior */
+}
+
+.photo-stack img.prev {
+    opacity: 1;
+    z-index: 1;            /* la anterior se queda debajo hasta terminar el fundido */
+    transition: none;
+}
+
+/* Hover: igual que los botones */
+.photo-stack:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Shake de llamada a la acción (versión suave de ctaWiggle) */
+@keyframes photoWiggle {
+
+    0%,
+    48%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    8% {
+        transform: translateY(-4px) rotate(-0.8deg);
+    }
+
+    16% {
+        transform: translateY(0) rotate(0.6deg);
+    }
+
+    24% {
+        transform: translateY(-2px) rotate(-0.4deg);
+    }
+
+    32% {
+        transform: translateY(0) rotate(0.25deg);
+    }
+
+    40% {
+        transform: translateY(0) rotate(-0.1deg);
+    }
+}
+
+body:not(.is-busy) .photo-stack.cta {
+    animation: photoWiggle 2.6s ease-in-out infinite;
+}
+
+/* Con el cursor encima se detiene para que se vea el hover */
+body .photo-stack.cta:hover {
+    animation: none;
+}
+
+@media (min-width: 900px) {
+    .photo-gallery {
+        padding: 12px 24px 18px;
+    }
+
+    .photo-stack {
+        aspect-ratio: 3 / 1;      /* proporción del mockup de escritorio */
+    }
+}
+
+
+/* =========================================================
+   VISOR AMPLIADO (carrusel)
+========================================================= */
+
+.gv {
+    /* móvil */
+    --card-h: 62vh;
+    --card-w: 74vw;
+    --s: 0.92;                 /* escala de las fotos laterales */
+    --gap: 3vw;                /* separación entre foto central y laterales */
+    --step: calc(var(--card-w) * (0.5 + var(--s) / 2) + var(--gap));
+
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    background: rgba(0, 20, 28, 0.55);   /* oscurece la pantalla principal */
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+
+@supports (height: 100dvh) {
+    .gv {
+        --card-h: 62dvh;
+    }
+}
+
+.gv.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease;
+}
+
+.gv-stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.gv-slide {
+    --d: 0;                    /* distancia a la foto actual (la pone el JS) */
+    --sc: 1;
+    --k: 1;                    /* multiplicador del hover */
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: var(--card-w);
+    height: var(--card-h);
+
+    border-radius: 16px;
+    overflow: hidden;
+    background: #d9d9d9;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+    transform:
+        translate(-50%, -50%)
+        translateX(calc(var(--d) * var(--step)))
+        scale(calc(var(--sc) * var(--k)));
+
+    transition: transform 0.4s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.3s ease;
+}
+
+.gv-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.gv-slide[data-pos="center"] {
+    --sc: 1;
+    z-index: 3;
+}
+
+.gv-slide[data-pos="side"] {
+    --sc: var(--s);
+    z-index: 2;
+    cursor: pointer;
+}
+
+.gv-slide[data-pos="far"] {
+    --sc: var(--s);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Hover de las fotos laterales: igual que los botones */
+.gv-slide[data-pos="side"]:hover {
+    --k: 1.05;
+}
+
+/* Puntos indicadores */
+.gv-dots {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    right: 0;
+    top: calc(50% + var(--card-h) / 2 + 18px);
+
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+}
+
+.gv-dot {
+    width: 11px;
+    height: 11px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.gv-dot.active {
+    background: #00140F;
+    transform: scale(1.15);
+}
+
+/* Botón cerrar */
+.gv-close {
+    position: absolute;
+    z-index: 6;
+
+    left: calc(50% - var(--card-w) / 2 - 15px);
+    top: calc(50% - var(--card-h) / 2 - 58px);
+
+    width: 43px;
+    height: 43px;
+    padding: 8px;
+
+    border: none;
+    border-radius: 50%;
+    background: #00a35f;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: transform 0.2s ease;
+}
+
+.gv-close:hover {
+    transform: scale(1.05);
+}
+
+.gv-close img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ---------- Escritorio ---------- */
+
+@media (min-width: 900px) {
+
+    .gv {
+        --card-h: 80vh;
+        --card-w: min(46vw, calc(var(--card-h) * 0.91));
+        --s: 0.67;
+        --gap: 22px;
+    }
+
+    .gv-close {
+        left: calc(50% - var(--card-w) / 2 - 64px);
+        top: calc(50% - var(--card-h) / 2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    body .photo-stack.cta {
+        animation: none !important;
+    }
+
+    .gv-slide {
+        transition: none;
+    }
+}

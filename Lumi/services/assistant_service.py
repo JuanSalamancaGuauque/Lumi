@@ -157,6 +157,10 @@ ZONA: {zona}
 
         place = None
 
+        # True si el lugar NO lo mencionó el usuario en este mensaje,
+        # sino que se recuperó de la memoria (preguntas de seguimiento).
+        place_from_memory = False
+
         if place_name:
 
             place = repository.get_by_name(place_name)
@@ -172,6 +176,8 @@ ZONA: {zona}
             if last_place:
 
                 place = last_place
+
+                place_from_memory = True
 
                 context["lugar_memoria"] = last_place["nombre"]
 
@@ -305,7 +311,9 @@ ZONA: {zona}
         # 13. Datos para frontend
         # ==========================================
 
-        if place:
+        # Solo se mandan fotos si el usuario mencionó el lugar en ESTE
+        # mensaje (no cuando viene de la memoria).
+        if place and not place_from_memory:
 
             response["place"] = place
 

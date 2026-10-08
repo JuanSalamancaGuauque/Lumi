@@ -42,6 +42,48 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
+# Fotos de los lugares
+# ---------------------------------------------------------------------------
+
+# Carpeta static/images (un nivel arriba de database/)
+IMAGES_DIR = BASE_DIR.parent / "static" / "images"
+EXTENSIONES_FOTO = {".jpg", ".jpeg", ".png"}
+
+
+def fotos(carpeta, nombre, maximo=4):
+    """
+    Busca SOLA las fotos de static/images/lugares/<carpeta>/ y arma la
+    lista para la tabla "imagen". No hay que escribir los nombres de los
+    archivos: toma los .jpg, .jpeg y .png de la carpeta ordenados por
+    nombre (por eso conviene que lleven el numero _1_, _2_, _3_, _4_).
+    La primera queda como foto principal.
+    """
+    ruta = IMAGES_DIR / "lugares" / carpeta
+
+    if not ruta.is_dir():
+        logger.warning("No existe la carpeta de fotos: %s", ruta)
+        return []
+
+    archivos = sorted(
+        f.name for f in ruta.iterdir()
+        if f.is_file() and f.suffix.lower() in EXTENSIONES_FOTO
+    )[:maximo]
+
+    if not archivos:
+        logger.warning("La carpeta %s no tiene fotos .jpg/.jpeg/.png", ruta)
+
+    return [
+        {
+            "archivo": f"lugares/{carpeta}/{archivo}",
+            "texto_alternativo": f"{nombre} - foto {i}",
+            "es_principal": 1 if i == 1 else 0,
+        }
+        for i, archivo in enumerate(archivos, start=1)
+    ]
+
+
+
+# ---------------------------------------------------------------------------
 # Datos base
 # ---------------------------------------------------------------------------
 
@@ -141,7 +183,7 @@ LUGARES = [
 
     # -----------------------------------------------------------------
     # FASE 3 - Zona piloto Chapinero (7 lugares, datos verificados)
-    # Ninguno tiene foto real todavia: no se incluye "imagenes".
+    # Sus fotos se cargan con fotos("carpeta", "Nombre") desde static/images/lugares/.
     # -----------------------------------------------------------------
 
     {
@@ -161,6 +203,7 @@ LUGARES = [
         ),
         "latitud": 4.6495531,
         "longitud": -74.0623099,
+        "imagenes": fotos("basilica_lourdes", "Basilica de Lourdes"),
     },
     {
         "nombre": "Libreria Wilborada 1047",
@@ -176,6 +219,7 @@ LUGARES = [
         "horario_texto": "Lunes a Sabado 10:00 AM - 7:00 PM, Domingo 12:00 PM - 4:00 PM",
         "latitud": 4.6558210,
         "longitud": -74.0589199,
+        "imagenes": fotos("libreria_wilborada", "Libreria Wilborada 1047"),
     },
     {
         "nombre": "Zona G",
@@ -190,6 +234,7 @@ LUGARES = [
         "horario_texto": "Varia segun el restaurante, en general de 12:00 PM a 11:00 PM",
         "latitud": 4.6468856,
         "longitud": -74.0559631,
+        "imagenes": fotos("zona_g", "Zona G"),
     },
     {
         "nombre": "Mesa Franca",
@@ -210,6 +255,7 @@ LUGARES = [
         ),
         "latitud": 4.6461291,
         "longitud": -74.0601291,
+        "imagenes": fotos("mesa_franca", "Mesa Franca"),
     },
     {
         "nombre": "Parque El Virrey",
@@ -223,6 +269,7 @@ LUGARES = [
         "horario_texto": "Abierto las 24 horas",
         "latitud": 4.6732479,
         "longitud": -74.0540574,
+        "imagenes": fotos("parque_virrey", "Parque El Virrey"),
     },
     {
         "nombre": "Parque de la 93",
@@ -236,6 +283,7 @@ LUGARES = [
         "horario_texto": "Abierto las 24 horas",
         "latitud": 4.6765317,
         "longitud": -74.0484162,
+        "imagenes": fotos("parque_93", "Parque de la 93"),
     },
     {
         "nombre": "Quebrada La Vieja",
@@ -256,6 +304,7 @@ LUGARES = [
         ),
         "latitud": 4.6501285,
         "longitud": -74.0485573,
+        "imagenes": fotos("quebrada_la_vieja", "Quebrada La Vieja"),
     },
 ]
 

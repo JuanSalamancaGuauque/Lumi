@@ -165,74 +165,17 @@
 
     </main>
 
-
-
-    <!-- =========================================================
-         MODAL DE IMAGEN
-    ========================================================== -->
-
-    <div
-        id="imageModal"
-        class="image-modal"
-        aria-hidden="true"
-    >
-
-
-        <button
-            id="closeModal"
-            class="close-modal"
-            type="button"
-            aria-label="Cerrar imagen"
-        >
-
-            <img
-                src="/static/images/quitar%20lumi.png"
-                alt="Cerrar"
-            >
-
-        </button>
-
-
-        <div class="modal-content">
-
-
-            <div class="modal-image-wrapper">
-
-                <div class="modal-loading">
-                    Cargando imagen...
-                </div>
-
-                <img
-                    id="modalImage"
-                    src=""
-                    alt="Lugar recomendado"
-                >
-
-            </div>
-
-
-            <div class="modal-info">
-
-                <h2 id="modalTitle"></h2>
-
-                <p id="modalDescription"></p>
-
-            </div>
-
-
-        </div>
-
-
-    </div>
-
-
-
     <!-- =========================================================
          JAVASCRIPT
     ========================================================== -->
 
     <script
         src="/js/api.js"
+        defer
+    ></script>
+
+    <script
+        src="/js/gallery.js"
         defer
     ></script>
 
