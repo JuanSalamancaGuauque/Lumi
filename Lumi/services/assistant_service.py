@@ -27,6 +27,41 @@ from services.gemini_service import ask_gemini
 repository = PlaceRepository()
 
 
+# Intenciones en las que, si hay varios lugares candidatos (por
+# categoría o zona), se elige UNO para mostrar sus fotos.
+INTENCIONES_CON_DESTACADO = {"recomendar", "buscar_categoria", "ver_fotos"}
+
+
+def _para_gemini(place):
+    """
+    Copia del lugar SIN las rutas de las fotos. Las fotos las muestra
+    el frontend; si Gemini las ve, las escribe en el chat como links.
+    """
+    return {
+        key: value
+        for key, value in place.items()
+        if key not in ("imagenes", "imagen_principal")
+    }
+
+
+def _elegir_recomendacion(candidatos, memory):
+    """
+    Elige un lugar al azar, evitando repetir el último del que se
+    habló si hay otras opciones.
+    """
+    if not candidatos:
+        return None
+
+    last_place = memory.get_last_place()
+
+    if last_place and len(candidatos) > 1:
+        candidatos = [
+            p for p in candidatos if p["id"] != last_place["id"]
+        ]
+
+    return random.choice(candidatos)
+
+
 class AssistantService:
 
     def process_message(self, message, session_id):
@@ -169,7 +204,16 @@ ZONA: {zona}
         # 5. Usar memoria
         # ==========================================
 
-        if place is None:
+        # Solo para seguimientos ("¿y a qué hora abre?", "¿fotos?").
+        # Si el usuario pide una categoría, una zona o una
+        # recomendación nueva, el lugar anterior ya no aplica.
+        es_seguimiento = (
+            not category
+            and not zona
+            and intent != "recomendar"
+        )
+
+        if place is None and es_seguimiento:
 
             last_place = memory.get_last_place()
 
@@ -190,7 +234,7 @@ ZONA: {zona}
 
             memory.remember_place(place)
 
-            context["lugar"] = place
+            context["lugar"] = _para_gemini(place)
 
 
         # ==========================================
@@ -207,7 +251,9 @@ ZONA: {zona}
 
                 memory.remember_category(category)
 
-                context["lugares_categoria"] = places
+                context["lugares_categoria"] = [
+                    _para_gemini(p) for p in places
+                ]
 
 
         # ==========================================
@@ -222,7 +268,9 @@ ZONA: {zona}
 
                 context["zona"] = zona
 
-                context["lugares_zona"] = zona_places
+                context["lugares_zona"] = [
+                    _para_gemini(p) for p in zona_places
+                ]
 
                 # Se agregan a "places" para que el frontend reciba
                 # también estos lugares (mismo campo que categorías),
@@ -235,41 +283,60 @@ ZONA: {zona}
 
 
         # ==========================================
-        # 8. Recomendación
+        # 8. Lugar destacado (el de las fotos)
         # ==========================================
 
-        if intent == "recomendar":
+        # Es el ÚNICO lugar cuyas fotos se mandan al frontend, y a
+        # Gemini se le pide que hable de ese mismo lugar. Así el texto
+        # y la foto siempre coinciden.
+        featured = None
 
-            if places:
+        if place and not place_from_memory:
 
-                recommended_place = random.choice(places)
+            # El usuario nombró el lugar en este mensaje.
+            featured = place
 
-                memory.remember_place(recommended_place)
+        elif place and intent == "ver_fotos":
 
-                context["recomendacion"] = recommended_place
+            # "¿Imágenes?" justo después de hablar de un lugar.
+            featured = place
 
-            else:
+        elif places and intent in INTENCIONES_CON_DESTACADO:
 
-                all_places = repository.get_all()
+            featured = _elegir_recomendacion(places, memory)
 
-                if all_places:
+        elif intent == "recomendar":
 
-                    recommended_place = random.choice(all_places)
+            featured = _elegir_recomendacion(repository.get_all(), memory)
 
-                    memory.remember_place(recommended_place)
+        if featured and featured is not place:
 
-                    context["recomendacion"] = recommended_place
+            memory.remember_place(featured)
+
+            context["recomendacion"] = _para_gemini(featured)
+
+        # Le dice a Gemini de qué lugar verá fotos el usuario (o que
+        # no hay fotos que mostrar, para que pregunte de qué lugar).
+        if intent == "ver_fotos":
+
+            context["tipo_respuesta"] = "ver_fotos"
+
+        context["fotos_en_pantalla"] = (
+            featured["nombre"] if featured else None
+        )
 
 
         # ==========================================
         # 9. Si no hay contexto específico
         # ==========================================
 
-        if not place and not places:
+        if not place and not places and not featured:
 
             all_places = repository.get_all()
 
-            context["lugares_disponibles"] = all_places
+            context["lugares_disponibles"] = [
+                _para_gemini(p) for p in all_places
+            ]
 
 
         # ==========================================
@@ -311,21 +378,14 @@ ZONA: {zona}
         # 13. Datos para frontend
         # ==========================================
 
-        # Solo se mandan fotos si el usuario mencionó el lugar en ESTE
-        # mensaje (no cuando viene de la memoria).
-        if place and not place_from_memory:
+        if featured:
 
-            response["place"] = place
+            response["place"] = featured
 
 
         if places:
 
             response["places"] = places
-
-
-        if intent == "recomendar" and context.get("recomendacion"):
-
-            response["place"] = context["recomendacion"]
 
 
         return response

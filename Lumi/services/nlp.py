@@ -47,20 +47,59 @@ def _keyword_pattern(keyword):
 # Diccionario de categorías (sinónimos)
 # ---------------------------------------------------------------------------
 
+# Cada clave debe coincidir EXACTAMENTE con el campo "nombre" de la
+# tabla categoria (ver database/init_db.py), porque
+# repository.get_by_category() hace un match exacto contra ese nombre.
+# Solo están las categorías de la zona piloto Chapinero.
+
 CATEGORIES = {
-    "museo": [
-        "museo", "museos", "galeria", "galerias", "exposicion",
-        "exposiciones", "arte", "cultural", "patrimonio", "coleccion",
+    "restaurante": [
+        "restaurante", "restaurantes", "comer", "comida", "almorzar",
+        "almuerzo", "cenar", "cena", "donde comer",
+    ],
+    "gastronomia": [
+        "gastronomia", "gastronomica", "gastronomico", "zona gastronomica",
+        "comida internacional",
     ],
     "parque": [
-        "parque", "parques", "jardin", "jardines", "plaza", "plazas",
-        "zona verde", "bosque", "area verde", "reserva natural",
+        "parque", "parques", "zona verde", "area verde", "aire libre",
+        "descansar", "relajarme", "relajarse", "relajar", "tranquilo",
+        "tranquila", "pasear", "picnic",
     ],
-    "mirador": [
-        "mirador", "miradores", "vista", "vistas", "panoramica",
-        "mirante", "cerro", "vista panoramica",
+    "sendero": [
+        "sendero", "senderos", "caminata", "caminar", "senderismo",
+        "naturaleza", "quebrada", "cascada", "montana",
+    ],
+    "iglesia": [
+        "iglesia", "iglesias", "basilica", "templo", "misa",
+        "arquitectura religiosa",
+    ],
+    "libreria": [
+        "libreria", "librerias", "libro", "libros", "leer", "lectura",
+        "cafe", "cafeteria",
     ],
 }
+
+
+# ---------------------------------------------------------------------------
+# Alias de lugares
+# ---------------------------------------------------------------------------
+# Formas cortas o comunes con las que la gente nombra cada lugar.
+# La clave debe coincidir EXACTAMENTE con lugar.nombre en la base de datos.
+
+PLACE_ALIASES = {
+    "Parque El Virrey": ["virrey", "parque virrey", "parque del virrey"],
+    "Parque de la 93": ["parque 93", "parque de la 93", "la 93"],
+    "Libreria Wilborada 1047": ["wilborada"],
+    "Basilica Menor Nuestra Senora de Lourdes": [
+        "lourdes", "basilica de lourdes", "iglesia de lourdes",
+    ],
+    "Quebrada La Vieja": ["quebrada la vieja"],
+}
+
+# Palabras que se ignoran al comparar nombres de lugares
+# ("parque virrey" == "Parque El Virrey").
+_STOPWORDS_NOMBRE = {"el", "la", "los", "las", "de", "del", "y"}
 
 
 # ---------------------------------------------------------------------------
@@ -106,6 +145,11 @@ INTENTS = {
         "atencion al publico",
     ],
 
+    "ver_fotos": [
+        "foto", "fotos", "imagen", "imagenes", "fotografia", "fotografias",
+        "muestrame", "mostrar", "como se ve", "ver como es",
+    ],
+
     "consultar_ubicacion": [
         "donde", "ubicacion", "ubicado", "ubicada", "queda", "quedan",
         "como llegar", "direccion", "en que parte", "en que zona",
@@ -131,6 +175,10 @@ INTENTS = {
         "recomiendame",
         "recomendacion",
         "recomendaciones",
+        "recomiendes",
+        "recomiendas",
+        "recomendarias",
+        "recomendar",
         "que visitar",
         "que me recomiendas",
         "cual recomiendas",
@@ -239,6 +287,57 @@ def detect_intent(text, debug=False):
         key=lambda item: (item[1], -_INTENT_ORDER.index(item[0])),
     )[0]
 
+    # 🆕 Frases como "que hay" o "que mas" son ambiguas: sirven
+    # tanto de saludo casual ("¿Qué hay?") como de pregunta real
+    # ("¿Qué hay en Chapinero?"). Si el mensaje menciona una
+    # categoría o zona conocida, YA NO es un simple saludo/
+    # despedida/agradecimiento: es una pregunta concreta sobre
+    # eso, y no debe cortar el flujo antes de buscarla.
+    intenciones_conversacionales = {"saludo", "despedida", "agradecimiento"}
+
+    if best_intent in intenciones_conversacionales:
+
+        # 🆕 Lo mismo pasa con "que tal": "¿Y qué tal algún lugar para
+        # descansar?" no es un saludo. Si además del saludo se detectó
+        # otra intención concreta, o se menciona un lugar, gana esa.
+        otras_intenciones = [
+            intent for intent in scores
+            if intent not in intenciones_conversacionales
+        ]
+
+        menciona_categoria_o_zona = bool(
+            extract_category(text) or extract_zona(text)
+        )
+
+        menciona_lugar = bool(extract_place_name(text))
+
+        if otras_intenciones or menciona_categoria_o_zona or menciona_lugar:
+
+            if debug:
+                print(
+                    f"⚠️ '{best_intent}' descartado: el mensaje "
+                    "trae una pregunta concreta"
+                )
+
+            for intent in intenciones_conversacionales:
+                scores.pop(intent, None)
+
+            if scores:
+                best_intent = max(
+                    scores.items(),
+                    key=lambda item: (item[1], -_INTENT_ORDER.index(item[0])),
+                )[0]
+            elif menciona_categoria_o_zona:
+                # No quedó ninguna otra intención detectada:
+                # "recomendar" es un buen intento genérico de
+                # búsqueda (activa el paso de recomendación en
+                # assistant_service.py).
+                best_intent = "recomendar"
+            else:
+                # Solo nombró un lugar ("Hola, ¿y Mesa Franca?"):
+                # se asume que quiere saber de él.
+                best_intent = "consultar_descripcion"
+
     if debug:
         print(f"✅ Intención elegida: {best_intent}")
 
@@ -289,6 +388,13 @@ def extract_zona(text):
     return best_zona
 
 
+def _quitar_stopwords(normalized_text):
+    return " ".join(
+        word for word in normalized_text.split()
+        if word not in _STOPWORDS_NOMBRE
+    )
+
+
 def extract_place_name(text, fuzzy_cutoff=0.85):
     """
     Busca si el usuario mencionó un lugar específico. Primero intenta una
@@ -299,12 +405,20 @@ def extract_place_name(text, fuzzy_cutoff=0.85):
     normalized = normalize_text(text)
     places = repository.get_all()
 
-    # 1. Coincidencia exacta (normalizada)
+    # 1. Coincidencia exacta (normalizada), tanto del nombre oficial como
+    #    de sus alias, ignorando artículos y preposiciones: así
+    #    "parque virrey" encuentra "Parque El Virrey".
+    sin_stopwords = _quitar_stopwords(normalized)
+
     exact_matches = []
     for place in places:
-        place_name_normalized = normalize_text(place["nombre"])
-        if _keyword_pattern(place_name_normalized).search(normalized):
-            exact_matches.append(place)
+        formas = [place["nombre"]] + PLACE_ALIASES.get(place["nombre"], [])
+
+        for forma in formas:
+            forma_normalizada = _quitar_stopwords(normalize_text(forma))
+            if forma_normalizada and _keyword_pattern(forma_normalizada).search(sin_stopwords):
+                exact_matches.append(place)
+                break
 
     if exact_matches:
         # Si hay varias coincidencias, devolver el nombre más largo/específico

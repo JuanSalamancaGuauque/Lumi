@@ -7,11 +7,11 @@ para la relacion muchos-a-muchos) e imagen. Tambien agrega el
 catalogo estado_avatar para la mascota (pendiente de nombres finales
 del equipo de animacion).
 
-FASE 3 (zona piloto): se agrega la zona "Chapinero" con 7 lugares
-reales (verificados via busqueda web y Google Places), 5 categorias
-nuevas (iglesia, libreria, gastronomia, restaurante, sendero) y sus
-relaciones. Ninguno de estos 7 lugares tiene fotos todavia, por eso
-no aparecen en la lista de "imagenes" (se agregan despues).
+FASE 3 (zona piloto): Lumi se centra SOLO en Chapinero, con 7 lugares
+reales (verificados via busqueda web y Google Places), sus categorias
+y sus fotos (static/images/lugares/). Los lugares de otras zonas
+(Monserrate, Museo del Oro, Jardin Botanico) se retiraron; si siguen
+en una lumi.db vieja, remove_stale_data() los borra al correr el script.
 
 Es seguro ejecutarlo varias veces: usa UPSERT por nombre, asi no
 duplica datos ni recicla IDs innecesariamente.
@@ -89,16 +89,6 @@ def fotos(carpeta, nombre, maximo=4):
 
 ZONAS = [
     {
-        "nombre": "Centro historico (Santa Fe / La Candelaria)",
-        "descripcion": "Corazon historico, cultural y patrimonial de Bogota.",
-        "ciudad": "Bogota",
-    },
-    {
-        "nombre": "Engativa",
-        "descripcion": "Localidad del noroccidente de Bogota.",
-        "ciudad": "Bogota",
-    },
-    {
         "nombre": "Chapinero",
         "descripcion": (
             "Zona piloto del proyecto Lumi: mezcla de gastronomia, "
@@ -109,8 +99,6 @@ ZONAS = [
 ]
 
 CATEGORIAS = [
-    {"nombre": "mirador", "descripcion": "Puntos con vistas panoramicas de la ciudad."},
-    {"nombre": "museo", "descripcion": "Espacios culturales y de exhibicion."},
     {"nombre": "parque", "descripcion": "Espacios verdes y naturales."},
     {"nombre": "iglesia", "descripcion": "Templos y sitios de arquitectura religiosa."},
     {"nombre": "libreria", "descripcion": "Librerias y espacios de lectura."},
@@ -122,65 +110,6 @@ CATEGORIAS = [
 # Cada lugar referencia su zona y categorias por NOMBRE (no por id), para
 # que el script resuelva las referencias sin depender de ids fijos.
 LUGARES = [
-    {
-        "nombre": "Monserrate",
-        "zona": "Centro historico (Santa Fe / La Candelaria)",
-        "categorias": ["mirador"],
-        "descripcion": "Uno de los lugares turisticos mas visitados de Bogota.",
-        "horario_texto": "Lunes a Domingo 5:00 AM - 10:00 PM",
-        "latitud": 4.6057,
-        "longitud": -74.0566,
-        "imagenes": [
-            {
-                "archivo": "monserrate.jpg",
-                "texto_alternativo": (
-                    "Vista del cerro de Monserrate con la iglesia en la "
-                    "cima, rodeada de vegetacion y nubes bajas."
-                ),
-                "es_principal": 1,
-            }
-        ],
-    },
-    {
-        "nombre": "Museo del Oro",
-        "zona": "Centro historico (Santa Fe / La Candelaria)",
-        "categorias": ["museo"],
-        "descripcion": (
-            "Museo con una de las colecciones de oro prehispanico mas "
-            "importantes del mundo."
-        ),
-        "horario_texto": "Martes a Domingo 9:00 AM - 5:00 PM",
-        "latitud": 4.6019,
-        "longitud": -74.0723,
-        "imagenes": [
-            {
-                # NOTA: este archivo todavia no existe en static/images/.
-                # Hay que conseguirlo/subirlo.
-                "archivo": "museo_oro.jpg",
-                "texto_alternativo": "Fachada del Museo del Oro en el centro de Bogota.",
-                "es_principal": 1,
-            }
-        ],
-    },
-    {
-        "nombre": "Jardin Botanico",
-        "zona": "Engativa",
-        "categorias": ["parque"],
-        "descripcion": "Espacio natural con una gran diversidad de flora colombiana.",
-        "horario_texto": "8:00 AM - 5:00 PM",
-        "latitud": 4.6676,
-        "longitud": -74.1048,
-        "imagenes": [
-            {
-                # NOTA: este archivo todavia no existe en static/images/.
-                # Hay que conseguirlo/subirlo.
-                "archivo": "jardin_botanico.jpg",
-                "texto_alternativo": "Senderos y vegetacion del Jardin Botanico de Bogota.",
-                "es_principal": 1,
-            }
-        ],
-    },
-
     # -----------------------------------------------------------------
     # FASE 3 - Zona piloto Chapinero (7 lugares, datos verificados)
     # Sus fotos se cargan con fotos("carpeta", "Nombre") desde static/images/lugares/.
@@ -224,7 +153,7 @@ LUGARES = [
     {
         "nombre": "Zona G",
         "zona": "Chapinero",
-        "categorias": ["gastronomia"],
+        "categorias": ["gastronomia", "restaurante"],
         "descripcion": (
             "Distrito gastronomico de Chapinero (la 'G' es de 'Gourmet'), "
             "ubicado entre las calles 65 y 71. Reune restaurantes de "
@@ -532,6 +461,24 @@ def upsert_estados_avatar(cursor, estados):
         )
 
 
+def remove_stale_data(cursor):
+    """
+    El UPSERT solo agrega o actualiza: un lugar que se quita de LUGARES
+    seguiria vivo en una lumi.db existente. Aqui se borran los lugares,
+    categorias y zonas que ya no estan en las listas de este archivo
+    (sus imagenes y relaciones se van por ON DELETE CASCADE).
+    """
+    for table, datos in (("lugar", LUGARES), ("categoria", CATEGORIAS), ("zona", ZONAS)):
+        nombres = [dato["nombre"] for dato in datos]
+        marcadores = ", ".join("?" for _ in nombres)
+        cursor.execute(
+            f"DELETE FROM {table} WHERE nombre NOT IN ({marcadores})",
+            nombres,
+        )
+        if cursor.rowcount:
+            logger.info("Eliminados %d registros viejos de '%s'.", cursor.rowcount, table)
+
+
 def reset_data(cursor):
     """Borra los datos (no el esquema) de las tablas nuevas. Uso: --reset."""
     logger.warning("Borrando datos existentes de zona/categoria/lugar/imagen/estado_avatar...")
@@ -573,6 +520,7 @@ def main():
                 upsert_categorias(cursor, CATEGORIAS)
                 upsert_lugares(cursor, LUGARES)
                 upsert_estados_avatar(cursor, ESTADOS_AVATAR)
+                remove_stale_data(cursor)
 
         logger.info(
             "Esquema y datos actualizados: %d zonas, %d categorias, %d lugares, %d estados de avatar.",

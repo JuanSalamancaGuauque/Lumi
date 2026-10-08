@@ -256,6 +256,15 @@ function prepareTextForSpeech(text) {
         String(text);
 
 
+    // Links Markdown: "[Fachada](lugares/...jpg)" -> "Fachada".
+    // Lumi no debe leer rutas de archivos en voz alta.
+    clean =
+        clean.replace(
+            /\[([^\]]+)\]\((?:[^()]|\([^()]*\))*\)/g,
+            "$1"
+        );
+
+
     // =================================================
     // MARKDOWN
     // =================================================

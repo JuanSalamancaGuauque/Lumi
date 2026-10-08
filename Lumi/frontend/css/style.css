@@ -1945,3 +1945,23 @@ body.is-busy .send-button {
 body.is-busy .mic-button .mic-icon {
     animation: none !important;
 }
+
+
+/* ---------------------------------------------------------
+   GALERÍA EN ESCRITORIO
+   Va al final para ganarle a las reglas de arriba: con
+   width 100% + max-height 220px la foto quedaba como una
+   franja de todo el ancho del chat y se recortaba mucho.
+   Ahora es una tarjeta de ancho limitado en proporción 4:3.
+--------------------------------------------------------- */
+
+@media (min-width: 900px) {
+
+    .photo-stack {
+        width: min(100%, 420px);
+
+        aspect-ratio: 4 / 3;
+
+        max-height: none;
+    }
+}

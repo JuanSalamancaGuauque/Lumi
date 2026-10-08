@@ -188,6 +188,15 @@ function cleanDisplayText(text) {
         String(text);
 
 
+    // Links Markdown: "[Fachada](lugares/...jpg)" -> "Fachada".
+    // Las fotos ya se muestran en la galería; la ruta no sirve en el chat.
+    clean =
+        clean.replace(
+            /\[([^\]]+)\]\((?:[^()]|\([^()]*\))*\)/g,
+            "$1"
+        );
+
+
     // Negrilla
     clean =
         clean.replace(
